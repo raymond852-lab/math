@@ -6,7 +6,7 @@
     <title>玉桂狗數學拼圖冒險 - P3 特訓</title>
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
-        body { font-family: 'Arial', sans-serif; background: var(--bg) url('https://4kwallpapers.com/images/wallpapers/cinnamoroll-5k-cute-2880x1800-11712.png') center/cover no-repeat fixed; text-align: center; margin: 0; padding: 10px; }
+        body { font-family: 'Arial', sans-serif; background: var(--bg) url('https://wallpapers.com/images/hd/cinnamoroll-sanrio-mbdl96ocnc6l1zqq.jpg') center/cover no-repeat fixed; text-align: center; margin: 0; padding: 10px; }
         .game-container { background: rgba(255,255,255,0.95); border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         h2 { color: #0288d1; margin-bottom: 10px; }
         .cinnamon-header { width: 120px; margin-bottom: 10px; border-radius: 50%; }
@@ -16,7 +16,7 @@
         .answer-input { width: 80%; font-size: 2.2rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; margin-bottom: 20px; }
         .btn-check { background: var(--cinna-pink); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 0 #f06292; }
         .score-board { display: flex; justify-content: space-around; margin-bottom: 20px; color: #888; font-weight: bold; font-size: 1.1rem; }
-        #puzzle-canvas { border: 3px solid var(--cinna-pink); border-radius: 15px; background: #f0f0f0; cursor: pointer; margin: 20px auto; display: block; }
+        #puzzle-canvas { border: 3px solid var(--cinna-pink); border-radius: 15px; background: #eee; margin: 20px auto; display: block; }
         .progress { font-size: 1.5rem; color: #4caf50; margin: 10px 0; }
         .reward-pop { position: absolute; font-size: 3rem; animation: floatUp 1s forwards; pointer-events: none; }
         #reward-area { position: relative; height: 100px; margin: 20px 0; }
@@ -25,6 +25,7 @@
         .hidden { display: none; }
         .correct-answer { color: #4caf50; font-size: 1.6rem; margin: 10px 0; }
         .complete { animation: sparkle 0.5s infinite; background: gold; color: #ffeb3b; font-size: 2rem; padding: 10px; border-radius: 20px; }
+        #loading-text { font-size: 1.2rem; color: #888; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -59,7 +60,8 @@
             <span id="progress">拼圖：0/20</span>
         </div>
         <canvas id="puzzle-canvas" width="400" height="320"></canvas>
-        <div id="progress-text" class="progress">答對解鎖拼圖塊！</div>
+        <div id="loading-text">載入拼圖中...</div>
+        <div id="progress-text" class="progress hidden">答對解鎖拼圖塊！</div>
         <div id="question-text" class="question">準備開始！</div>
         <div id="correct-display" class="correct-answer hidden"></div>
         <input type="number" id="answer" class="answer-input" pattern="\d*" inputmode="numeric" placeholder="?">
@@ -74,8 +76,10 @@
         let gameMode = '';
         let level = 1;
         let piecesRevealed = new Set();
-        let canvas, ctx, img, tileWidth = 80, tileHeight = 80, cols = 5, rows = 4;
+        let canvas, ctx, img;
+        const tileWidth = 80, tileHeight = 80, cols = 5, rows = 4;
         const totalPieces = 20;
+        const puzzleUrl = 'https://4kwallpapers.com/images/wallpapers/cinnamoroll-5k-cute-3840x2160-11712.png'; // 穩定高清圖
 
         function selectCategory(mode) {
             gameMode = mode;
@@ -92,6 +96,8 @@
             document.getElementById('score').innerText = score;
             document.getElementById('level-display').innerText = 'Lv.' + level;
             document.getElementById('progress').innerText = '拼圖：0/20';
+            document.getElementById('loading-text').classList.remove('hidden');
+            document.getElementById('progress-text').classList.add('hidden');
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             initPuzzle();
@@ -103,33 +109,42 @@
             ctx = canvas.getContext('2d');
             img = new Image();
             img.crossOrigin = 'anonymous';
-            img.onload = () => drawPuzzle();
-            img.src = 'https://4kwallpapers.com/images/wallpapers/cinnamoroll-5k-cute-5120x2880-11712.png';
-            canvas.onclick = () => {}; // 暫時無需點擊
+            img.onload = () => {
+                document.getElementById('loading-text').classList.add('hidden');
+                document.getElementById('progress-text').classList.remove('hidden');
+                drawPuzzle();
+            };
+            img.onerror = () => {
+                document.getElementById('loading-text').innerText = '載入圖片失敗，用灰色拼圖玩啦！';
+                drawPuzzle(); // 就算失敗都畫灰格
+            };
+            img.src = puzzleUrl;
         }
 
         function drawPuzzle() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const sourceWidth = img.naturalWidth || canvas.width;
+            const sourceHeight = img.naturalHeight || canvas.height;
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
                     let index = row * cols + col;
                     let x = col * tileWidth;
                     let y = row * tileHeight;
                     if (piecesRevealed.has(index)) {
-                        // 顯示原圖
-                        ctx.drawImage(img, (col / cols) * img.naturalWidth * (canvas.width / img.naturalWidth), (row / rows) * img.naturalHeight * (canvas.height / img.naturalHeight), tileWidth, tileHeight, x, y, tileWidth, tileHeight);
+                        // 正確顯示圖片塊
+                        ctx.drawImage(img, col * (sourceWidth / cols), row * (sourceHeight / rows), sourceWidth / cols, sourceHeight / rows, x, y, tileWidth, tileHeight);
                     } else {
-                        // 亂序顏色塊
-                        ctx.fillStyle = `hsl(${Math.random() * 360}, 50%, 60%)`;
+                        // 隱藏用灰色 + 白框
+                        ctx.fillStyle = '#ccc';
                         ctx.fillRect(x, y, tileWidth, tileHeight);
                         ctx.strokeStyle = '#fff';
-                        ctx.lineWidth = 2;
+                        ctx.lineWidth = 3;
                         ctx.strokeRect(x, y, tileWidth, tileHeight);
                     }
                 }
             }
             let revealedCount = piecesRevealed.size;
-            document.getElementById('progress-text').innerText = `拼圖：${revealedCount}/20`;
+            document.getElementById('progress').innerText = `拼圖：${revealedCount}/20`;
             if (revealedCount === totalPieces) {
                 completePuzzle();
             }
@@ -155,8 +170,8 @@
             sparkle.innerText = '✨';
             sparkle.style.position = 'absolute';
             sparkle.style.left = (canvas.offsetLeft + x - 20) + 'px';
-            sparkle.style.top = (canvas.offsetTop + y - 20) + 'px';
-            sparkle.style.fontSize = '2rem';
+            sparkle.style.top = (canvas.offsetTop + y - 30) + 'px';
+            sparkle.style.fontSize = '3rem';
             sparkle.className = 'reward-pop';
             document.body.appendChild(sparkle);
             setTimeout(() => sparkle.remove(), 1000);
@@ -164,13 +179,13 @@
 
         function completePuzzle() {
             document.getElementById('progress').innerHTML = '<span class="complete">🎉 拼圖完成！好勁呀！ 🎉</span>';
-            speak('你好勁呀！拼圖齊晒！');
-            // 煙火效果
-            for (let i = 0; i < 20; i++) {
+            speak('你好勁呀！拼圖齊晒啦！');
+            for (let i = 0; i < 30; i++) {
                 setTimeout(() => showReward(), i * 100);
             }
         }
 
+        // 以下 generateQuestion、checkAnswer、showReward、speak 等函數同之前一樣（省略以節省空間，但完整保留）
         function generateQuestion() {
             document.getElementById('correct-display').classList.add('hidden');
             document.getElementById('answer').style.borderColor = 'var(--cinna-pink)';
@@ -223,7 +238,7 @@
                     hours = Math.floor(Math.random() * 10) + 1;
                     mins = Math.floor(Math.random() * 60);
                 } else {
-                    hours = Math.floor(Math.random() * 12) + 1; // 調低到12h，更適合P3
+                    hours = Math.floor(Math.random() * 12) + 1;
                     mins = Math.floor(Math.random() * 60);
                 }
                 correctAnswer = hours * 60 + mins;
@@ -258,7 +273,7 @@
         }
 
         function showReward() {
-            const rewards = ['🧁', '✨', '🍭', '🍓', '🌟', '💖'];
+            const rewards = ['🧁', '✨', '🍭', '🍓', '🌟', '💖', '🎉'];
             const r = document.createElement('div');
             r.className = 'reward-pop';
             r.style.left = Math.random() * 70 + 15 + '%';
@@ -272,13 +287,6 @@
             u.lang = 'zh-HK';
             window.speechSynthesis.speak(u);
         }
-
-        // 重玩按鈕（可選）
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'r' || e.key === 'R') {
-                location.reload();
-            }
-        });
     </script>
 </body>
 </html>
