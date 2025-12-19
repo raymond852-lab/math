@@ -8,39 +8,38 @@
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-dark: #0288d1; --cinna-pink: #ffc1e3; --bg: #f0f8ff; }
         body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg) url('https://wallpapers.com/images/hd/cinnamoroll-sanrio-mbdl96ocnc6l1zqq.jpg') center/cover no-repeat fixed; text-align: center; margin: 0; padding: 10px; user-select: none; }
-        
+       
         .game-container { background: rgba(255,255,255,0.96); border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 450px; margin: 0 auto; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; }
-        
+       
         /* 標題與角色 */
         h2 { color: var(--cinna-dark); margin: 5px 0 15px 0; font-family: 'Fredoka One', cursive; letter-spacing: 1px; }
         .cinnamon-header { width: 100px; margin-top: -60px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
-        
+       
         /* 按鈕樣式 */
         .category-btn { background: var(--cinna-pink); color: #880e4f; border: none; padding: 15px; border-radius: 20px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin: 8px 0; width: 100%; box-shadow: 0 4px 0 #f06292; transition: transform 0.1s; }
         .category-btn:active { transform: translateY(4px); box-shadow: none; }
         .level-btn { background: #b3e5fc; color: #01579b; box-shadow: 0 4px 0 #81d4fa; }
-        
+       
         /* 遊戲介面元素 */
         .top-bar { display: flex; justify-content: space-between; align-items: center; background: #e0f7fa; padding: 10px 15px; border-radius: 20px; margin-bottom: 15px; font-weight: bold; color: #006064; }
         .timer-box { font-family: 'Fredoka One', monospace; font-size: 1.5rem; color: #ff5252; display: flex; align-items: center; gap: 5px; }
-        
+       
         .question { font-size: 1.8rem; color: #37474f; margin: 15px 0; font-weight: bold; min-height: 80px; display: flex; align-items: center; justify-content: center; line-height: 1.4; flex-direction: column; }
         .hint-text { font-size: 1rem; color: #78909c; margin-top: 8px; font-weight: normal; }
-        
+       
         .answer-input { width: 120px; font-size: 2.2rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; background: transparent; color: #333; font-family: 'Fredoka One'; }
-        
+       
         .btn-check { background: linear-gradient(to bottom, #ff4081, #c51162); color: white; border: none; padding: 12px 50px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 15px rgba(233,30,99,0.4); margin-top: 15px; }
         .btn-home { position: absolute; top: 10px; left: 10px; background: #eceff1; border: none; padding: 5px 10px; border-radius: 10px; color: #546e7a; cursor: pointer; font-size: 0.9rem; }
-
         /* 畫布與進度 */
         #puzzle-canvas { border: 4px solid var(--cinna-pink); border-radius: 15px; background: #eee; margin: 10px auto; display: block; max-width: 100%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         #clock-canvas { border-radius: 50%; margin: 0 auto 10px; display: none; background: white; border: 4px solid #546e7a; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        
+       
         .reward-pop { position: fixed; font-size: 4rem; animation: floatUp 0.8s forwards; pointer-events: none; z-index: 100; }
         @keyframes floatUp { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -150px) scale(1); } }
-        
+       
         .hidden { display: none !important; }
-        
+       
         /* 結束畫面 */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; display: none; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 25px; text-align: center; max-width: 320px; animation: popIn 0.3s; border: 5px solid var(--cinna-blue); }
@@ -48,7 +47,6 @@
     </style>
 </head>
 <body>
-
     <div id="game-over-modal" class="modal">
         <div class="modal-content">
             <h2 id="end-title" style="font-size: 2rem;">時間到！⏰</h2>
@@ -57,12 +55,11 @@
             <button class="category-btn" onclick="location.reload()">再玩一次</button>
         </div>
     </div>
-
     <div id="start-screen" class="game-container" style="margin-top: 50px;">
         <img src="https://cdn.sanriowiki.com/2/23/Cinnamoroll.png" alt="玉桂狗" class="cinnamon-header">
         <h2>玉桂狗數學特訓</h2>
         <p style="color:#607d8b">20分鐘限時挑戰！<br>答對解鎖拼圖拿大獎！</p>
-        
+       
         <div style="margin: 20px 0;">
             <button class="category-btn" onclick="toggleMenu('mix')">➕➖✖️➗ 混合四則</button>
             <div id="mix-levels" class="hidden">
@@ -71,7 +68,7 @@
                 <button class="category-btn level-btn" onclick="startGame('mix',3)">Lv.3 括號挑戰</button>
             </div>
         </div>
-        
+       
         <div style="margin: 20px 0;">
             <button class="category-btn" onclick="toggleMenu('time')">⏰ 時間大師</button>
             <div id="time-levels" class="hidden">
@@ -81,28 +78,25 @@
             </div>
         </div>
     </div>
-
     <div id="game-screen" class="game-container hidden">
         <button class="btn-home" onclick="location.reload()">🏠 退出</button>
-        
+       
         <div class="top-bar">
             <div class="timer-box">⏳ <span id="timer-display">20:00</span></div>
             <div style="font-size:1.2rem; color:#0288d1;">🧩 <span id="progress-display">0/20</span></div>
         </div>
-
         <canvas id="puzzle-canvas" width="400" height="320"></canvas>
         <canvas id="clock-canvas" width="160" height="160"></canvas>
-        
+       
         <div id="question-area" class="question">載入中...</div>
         <div id="feedback" style="height: 25px; color: #e91e63; font-weight: bold; font-size: 1.1rem;"></div>
-        
+       
         <div>
             <input type="number" id="answer" class="answer-input" pattern="\d*" inputmode="numeric" placeholder="?">
             <br>
             <button class="btn-check" onclick="checkAnswer()">提交</button>
         </div>
     </div>
-
     <script>
         // --- 變數設定 ---
         let score = 0;
@@ -111,39 +105,34 @@
         let gameMode = '';
         let level = 1;
         let correctAnswer = 0;
-        
+       
         // 計時器相關
         let timerInterval;
         let timeLeft = 20 * 60; // 20分鐘 (秒)
-
         // 畫布相關
         let canvas, ctx, img, clockCtx;
         const puzzleUrl = 'https://wallpapers.com/images/hd/cinnamoroll-sanrio-character-kj9funibekfso7sj.jpg';
         const tileW = 80, tileH = 80, cols = 5, rows = 4;
-
         // --- 系統功能 ---
-
         function toggleMenu(id) {
             document.querySelectorAll('[id$="-levels"]').forEach(el => el.classList.add('hidden'));
             document.getElementById(id + '-levels').classList.remove('hidden');
         }
-
         function startGame(mode, lvl) {
             gameMode = mode;
             level = lvl;
             piecesRevealed.clear();
             timeLeft = 20 * 60; // 重置時間
-            
+           
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             document.getElementById('clock-canvas').style.display = (mode === 'time') ? 'block' : 'none';
-            
+           
             initPuzzle();
             if(mode === 'time') initClock();
             startTimer();
             generateQuestion();
         }
-
         function startTimer() {
             clearInterval(timerInterval);
             updateTimerUI();
@@ -155,19 +144,17 @@
                 }
             }, 1000);
         }
-
         function updateTimerUI() {
             const m = Math.floor(timeLeft / 60);
             const s = timeLeft % 60;
             document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0'+s : s}`;
             if(timeLeft < 60) document.getElementById('timer-display').style.color = 'red';
         }
-
         function gameOver(isWin) {
             clearInterval(timerInterval);
             document.getElementById('game-over-modal').style.display = 'flex';
             document.getElementById('final-pieces').innerText = piecesRevealed.size;
-            
+           
             if(isWin) {
                 document.getElementById('end-title').innerText = "🎉 挑戰成功！";
                 document.getElementById('end-msg').innerHTML = "太厲害了！<br>20分鐘內完成了拼圖！";
@@ -178,9 +165,7 @@
                 speak("時間到了，下次加油！");
             }
         }
-
         function speak(text) {
-            // 嘗試使用語音合成
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
@@ -188,50 +173,54 @@
                 window.speechSynthesis.speak(u);
             }
         }
-
         // --- 拼圖邏輯 ---
         function initPuzzle() {
             canvas = document.getElementById('puzzle-canvas');
             ctx = canvas.getContext('2d');
             img = new Image();
-            img.crossOrigin = 'anonymous'; 
+            img.crossOrigin = 'anonymous';
             img.onload = drawPuzzle;
             img.onerror = () => {
-                // 如果圖片載入失敗 (CORS或其他原因)，改用純色塊
-                ctx.fillStyle = '#b3e5fc'; ctx.fillRect(0,0,400,320);
-                ctx.fillStyle = '#0277bd'; ctx.font = '20px Arial'; 
-                ctx.fillText("圖片載入中...", 140, 160);
-                // 即使圖片失敗，邏輯仍可運行
+                document.getElementById('loading-text') && (document.getElementById('loading-text').innerText = '圖片載入失敗，用可愛藍色拼圖玩啦～');
+                // 畫藍色格 + 問號
+                ctx.fillStyle = '#b3e5fc';
+                ctx.fillRect(0, 0, 400, 320);
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        let x = c * tileW, y = r * tileH;
+                        ctx.fillStyle = '#81d4fa';
+                        ctx.fillRect(x, y, tileW, tileH);
+                        ctx.strokeStyle = '#fff';
+                        ctx.strokeRect(x, y, tileW, tileH);
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 30px Arial';
+                        ctx.fillText('?', x + 25, y + 55);
+                    }
+                }
             };
             img.src = puzzleUrl;
         }
-
         function drawPuzzle() {
             ctx.clearRect(0,0,400,320);
-            // 繪製背景網格或已解鎖圖片
             for(let r=0; r<rows; r++) {
                 for(let c=0; c<cols; c++) {
                     let idx = r*cols + c;
                     let x = c*tileW;
                     let y = r*tileH;
-                    
+                   
                     if(piecesRevealed.has(idx)) {
-                        // 畫圖片
                         if(img.complete && img.naturalWidth !== 0) {
                             ctx.drawImage(img, c*(img.width/cols), r*(img.height/rows), img.width/cols, img.height/rows, x, y, tileW, tileH);
                         } else {
-                            // 圖片失敗時的替代方案
                             ctx.fillStyle = '#81d4fa'; ctx.fillRect(x,y,tileW,tileH);
                             ctx.strokeRect(x,y,tileW,tileH);
                         }
                     } else {
-                        // 畫未解鎖遮罩
                         ctx.fillStyle = '#e0e0e0';
                         ctx.fillRect(x,y,tileW,tileH);
                         ctx.strokeStyle = '#fff';
                         ctx.lineWidth = 2;
                         ctx.strokeRect(x,y,tileW,tileH);
-                        // 畫問號
                         ctx.fillStyle = '#bbb';
                         ctx.font = 'bold 24px Arial';
                         ctx.fillText("?", x+35, y+50);
@@ -240,11 +229,10 @@
             }
             document.getElementById('progress-display').innerText = `${piecesRevealed.size}/${totalPieces}`;
         }
-
         function revealPiece() {
             let avail = [];
             for(let i=0; i<totalPieces; i++) if(!piecesRevealed.has(i)) avail.push(i);
-            
+           
             if(avail.length > 0) {
                 let idx = avail[Math.floor(Math.random()*avail.length)];
                 piecesRevealed.add(idx);
@@ -255,7 +243,6 @@
                 }
             }
         }
-
         function showRewardAnim() {
             const el = document.createElement('div');
             el.className = 'reward-pop';
@@ -264,7 +251,6 @@
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 1000);
         }
-
         // --- 時鐘邏輯 ---
         function initClock() {
             const c = document.getElementById('clock-canvas');
@@ -273,48 +259,41 @@
         function drawClock(h, m) {
             if(!clockCtx) return;
             const ctx = clockCtx;
-            ctx.clearRect(0,0,160,160); 
-            ctx.save(); 
+            ctx.clearRect(0,0,160,160);
+            ctx.save();
             ctx.translate(80,80);
-            
-            // 錶盤
-            ctx.beginPath(); ctx.arc(0,0,70,0,2*Math.PI); 
-            ctx.fillStyle='white'; ctx.fill(); 
+           
+            ctx.beginPath(); ctx.arc(0,0,70,0,2*Math.PI);
+            ctx.fillStyle='white'; ctx.fill();
             ctx.lineWidth = 4; ctx.strokeStyle='#546e7a'; ctx.stroke();
-            
-            // 數字
+           
             ctx.fillStyle='#333'; ctx.font="bold 14px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
             for(let i=1; i<=12; i++) {
                 let ang = i * Math.PI / 6;
                 ctx.fillText(i, Math.sin(ang)*58, -Math.cos(ang)*58);
             }
-            
-            // 時針 (考慮分鐘偏移)
-            drawHand(ctx, (h%12)*30 + m*0.5, 40, 5, '#333'); 
-            // 分針
-            drawHand(ctx, m*6, 55, 3, '#e91e63'); 
-            
-            // 中心點
+           
+            drawHand(ctx, (h%12)*30 + m*0.5, 40, 5, '#333');
+            drawHand(ctx, m*6, 55, 3, '#e91e63');
+           
             ctx.beginPath(); ctx.arc(0,0,5,0,2*Math.PI); ctx.fillStyle='#333'; ctx.fill();
             ctx.restore();
         }
-        
+       
         function drawHand(ctx, deg, len, w, color) {
             let rad = (deg-90) * Math.PI/180;
             ctx.beginPath(); ctx.lineWidth=w; ctx.lineCap="round"; ctx.strokeStyle=color;
             ctx.moveTo(0,0); ctx.lineTo(Math.cos(rad)*len, Math.sin(rad)*len); ctx.stroke();
         }
-
         // --- 題目生成與檢查 ---
         function generateQuestion() {
             document.getElementById('answer').value = '';
             document.getElementById('answer').style.borderColor = 'var(--cinna-pink)';
             document.getElementById('answer').focus();
             document.getElementById('feedback').innerText = '';
-            
+           
             let qHtml = '';
             let hint = '';
-
             if (gameMode === 'mix') {
                 if (level === 1) {
                     const ops = ['+', '-', '×'];
@@ -327,20 +306,19 @@
                     qHtml = `${a} ${op} ${b} = ?`;
                 }
                 else if (level === 2) {
-                    // 文字題 (確保邏輯正確，不使用 Regex 抓取)
                     const type = Math.floor(Math.random()*3);
                     let n1, n2;
-                    if(type === 0) { // 減法
-                        n1 = Math.floor(Math.random()*15)+10; // 10-25
-                        n2 = Math.floor(Math.random()*5)+1;   // 1-6
+                    if(type === 0) { 
+                        n1 = Math.floor(Math.random()*15)+10; 
+                        n2 = Math.floor(Math.random()*5)+1; 
                         qHtml = `有 ${n1} 個蘋果，吃了 ${n2} 個，<br>還有多少個？`;
                         correctAnswer = n1 - n2;
-                    } else if (type === 1) { // 乘法
-                        n1 = Math.floor(Math.random()*8)+3; // 每盒數量
-                        n2 = Math.floor(Math.random()*5)+2; // 盒數
+                    } else if (type === 1) { 
+                        n1 = Math.floor(Math.random()*8)+3; 
+                        n2 = Math.floor(Math.random()*5)+2; 
                         qHtml = `一盒有 ${n1} 枝筆，買了 ${n2} 盒，<br>共有多少枝？`;
                         correctAnswer = n1 * n2;
-                    } else { // 加法
+                    } else { 
                         n1 = Math.floor(Math.random()*20)+10;
                         n2 = Math.floor(Math.random()*20)+5;
                         qHtml = `小明有 ${n1} 張貼紙，<br>媽媽多送他 ${n2} 張，共有幾多張？`;
@@ -348,7 +326,6 @@
                     }
                 }
                 else if (level === 3) {
-                    // 括號題
                     let a = Math.floor(Math.random()*8)+2;
                     let b = Math.floor(Math.random()*8)+2;
                     let c = Math.floor(Math.random()*4)+2;
@@ -366,53 +343,46 @@
                     correctAnswer = parseInt(`${h}${m<10?'0'+m:m}`);
                 }
                 else if (level === 2) {
-                    // 時間經過 (修正為輸入 HHMM)
-                    let startH = Math.floor(Math.random()*8)+1; // 1~8點
+                    let startH = Math.floor(Math.random()*8)+1;
                     let startM = [0,30][Math.floor(Math.random()*2)];
-                    let durH = Math.floor(Math.random()*2)+1; // 經過 1-2 小時
+                    let durH = Math.floor(Math.random()*2)+1;
                     let durM = [0,30][Math.floor(Math.random()*2)];
-                    
-                    // 畫開始時間
+                   
                     drawClock(startH, startM);
-                    
+                   
                     let totalMin = startH*60 + startM + durH*60 + durM;
                     let finalH = Math.floor(totalMin/60);
                     let finalM = totalMin%60;
-                    
-                    // 處理 12小時制顯示 (如果超過 12點)
-                    let displayH = finalH > 12 ? finalH - 12 : finalH;
-                    
+                   
+                    let displayH = finalH % 12 || 12;
+                   
                     qHtml = `現在是 ${startH}:${startM===0?'00':30}，<br>經過 ${durH}小時${durM===0?'':durM+'分'}後是幾點？`;
                     hint = `(請輸入數字，如 ${displayH}:${finalM===0?'00':finalM} 輸入 ${displayH}${finalM<10?'0'+finalM:finalM})`;
-                    
-                    // 答案設定為 HHMM 格式
+                   
                     correctAnswer = parseInt(`${displayH}${finalM<10?'0'+finalM:finalM}`);
                 }
                 else if (level === 3) {
-                    // 24小時制轉12小時
-                    let h24 = Math.floor(Math.random()*10)+13; // 13~22 (下午1點到10點)
+                    let h24 = Math.floor(Math.random()*10)+13;
                     let m = [0,15,30,45][Math.floor(Math.random()*4)];
-                    drawClock(h24%12, m); // 畫圖只是輔助
+                    drawClock(h24%12, m);
                     qHtml = `24小時制的 ${h24}:${m<10?'0'+m:m}<br>是下午幾點？`;
                     hint = `(請輸入數字，如 1:30 輸入 130)`;
                     let h12 = h24 - 12;
                     correctAnswer = parseInt(`${h12}${m<10?'0'+m:m}`);
                 }
             }
-
             document.getElementById('question-area').innerHTML = qHtml + `<div class="hint-text">${hint}</div>`;
         }
-
         function checkAnswer() {
             const val = parseInt(document.getElementById('answer').value);
             if(isNaN(val)) return;
-            
+           
             if(val === correctAnswer) {
                 speak("答對了！好叻呀！");
                 document.getElementById('feedback').innerText = "答對了！✨";
                 document.getElementById('feedback').style.color = "#4caf50";
                 revealPiece();
-                setTimeout(generateQuestion, 1000); // 延遲一下讓學生看到讚美
+                setTimeout(generateQuestion, 1800);
             } else {
                 document.getElementById('feedback').innerText = "再算一次看看！💪";
                 document.getElementById('feedback').style.color = "#e91e63";
