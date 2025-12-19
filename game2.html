@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>玉桂狗應用題老師</title>
+    <style>
+        :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg); margin: 0; padding: 15px; text-align: center; }
+        
+        .card { background: white; border-radius: 25px; border: 3px solid var(--cinna-blue); padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+        .problem-text { font-size: 1.3rem; line-height: 1.8; color: #455a64; text-align: left; margin-bottom: 20px; min-height: 100px; }
+        .keyword { color: #f06292; font-weight: bold; text-decoration: underline; }
+        
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .opt-btn { background: white; border: 2px solid var(--cinna-blue); padding: 15px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .opt-btn:active { background: var(--cinna-blue); color: white; }
+        
+        .answer-box { margin-top: 20px; display: none; }
+        #final-ans { width: 100px; font-size: 1.5rem; border: none; border-bottom: 3px solid var(--cinna-pink); text-align: center; outline: none; }
+        
+        .reward { font-size: 3rem; margin-top: 15px; display: none; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div style="font-size: 0.9rem; color: #999; margin-bottom: 10px;">P3 應用題挑戰 🌟</div>
+        <div id="problem-display" class="problem-text">正在載入題目...</div>
+        
+        <button onclick="sayProblem()" style="background:none; border:none; font-size:2rem; cursor:pointer;">🔊</button>
+        
+        <div id="step-1">
+            <p style="color: #0288d1; font-weight: bold;">步驟 1：這題應該用什麼方法計算？</p>
+            <div class="option-grid">
+                <button class="opt-btn" onclick="checkStep1('+')">加法 (+)</button>
+                <button class="opt-btn" onclick="checkStep1('-')">減法 (-)</button>
+                <button class="opt-btn" onclick="checkStep1('x')">乘法 (×)</button>
+                <button class="opt-btn" onclick="checkStep1('÷')">除法 (÷)</button>
+            </div>
+        </div>
+
+        <div id="step-2" class="answer-box">
+            <p style="color: #f06292; font-weight: bold;">步驟 2：最後答案是多少？</p>
+            <input type="number" id="final-ans" placeholder="?">
+            <button class="opt-btn" style="background: var(--cinna-pink); color:white; border:none;" onclick="checkStep2()">檢查答案</button>
+        </div>
+
+        <div id="reward-icon" class="reward">🧁</div>
+        <button id="next-btn" onclick="nextProblem()" style="display:none; margin-top:20px; background:var(--cinna-blue); color:white; border:none; padding:10px 20px; border-radius:20px;">下一題 🚀</button>
+    </div>
+
+    <script>
+        const problems = [
+            { 
+                text: "玉桂狗有 12 盒餅乾，每盒有 8 塊，<span class='keyword'>一共有</span>餅乾多少塊？", 
+                op: 'x', 
+                ans: 96,
+                hint: "看到『每盒有』和『一共』，通常是用乘法喔！"
+            },
+            { 
+                text: "老師把 45 粒糖果<span class='keyword'>平均分給</span> 5 位同學，每人可得糖果多少粒？", 
+                op: '÷', 
+                ans: 9,
+                hint: "『平均分配』是除法的關鍵字！"
+            },
+            { 
+                text: "書包原價 150 元，現在<span class='keyword'>減價</span> 35 元，現在售價是多少元？", 
+                op: '-', 
+                ans: 115,
+                hint: "『減價』代表數量變少了。"
+            }
+        ];
+
+        let currentP = 0;
+
+        function loadProblem() {
+            const p = problems[currentP];
+            document.getElementById('problem-display').innerHTML = p.text;
+            document.getElementById('step-1').style.display = 'block';
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('reward-icon').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('final-ans').value = '';
+            sayProblem();
+        }
+
+        function checkStep1(userOp) {
+            if (userOp === problems[currentP].op) {
+                speak("答對了！選對運算號了。");
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+            } else {
+                speak("再想一想，" + problems[currentP].hint);
+            }
+        }
+
+        function checkStep2() {
+            const userAns = parseInt(document.getElementById('final-ans').value);
+            if (userAns === problems[currentP].ans) {
+                speak("太棒了！計算正確！");
+                document.getElementById('reward-icon').innerText = ['🧁','🍭','🎀','🌟'][Math.floor(Math.random()*4)];
+                document.getElementById('reward-icon').style.display = 'block';
+                document.getElementById('next-btn').style.display = 'inline-block';
+            } else {
+                speak("計算錯了，再試一次！");
+            }
+        }
+
+        function nextProblem() {
+            currentP = (currentP + 1) % problems.length;
+            loadProblem();
+        }
+
+        function sayProblem() {
+            const u = new SpeechSynthesisUtterance(problems[currentP].text.replace(/<[^>]*>/g, ''));
+            u.lang = 'zh-HK'; u.rate = 0.8;
+            window.speechSynthesis.speak(u);
+        }
+
+        function speak(t) {
+            const u = new SpeechSynthesisUtterance(t);
+            u.lang = 'zh-HK'; window.speechSynthesis.speak(u);
+        }
+
+        window.onload = loadProblem;
+    </script>
+</body>
+</html>
