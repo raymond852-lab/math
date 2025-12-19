@@ -3,122 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗無限應用題</title>
+    <title>玉桂狗數學 Level Up</title>
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
         body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); padding: 15px; text-align: center; }
         .card { background: white; border-radius: 25px; border: 3px solid var(--cinna-blue); padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .problem-text { font-size: 1.3rem; line-height: 1.8; color: #455a64; text-align: left; margin: 20px 0; min-height: 100px; background: #fffaf0; padding: 15px; border-radius: 15px; }
+        
+        /* 等級選擇器 */
+        .lvl-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .lvl-btn { flex: 1; padding: 10px; border-radius: 15px; border: 2px solid #ddd; background: #fff; cursor: pointer; font-weight: bold; }
+        .lvl-btn.active { border-color: var(--cinna-blue); background: #e1f5fe; color: #0288d1; }
+
+        .problem-text { font-size: 1.2rem; line-height: 1.6; color: #455a64; text-align: left; margin: 15px 0; background: #fffaf0; padding: 15px; border-radius: 15px; min-height: 80px; }
         .keyword { color: #f06292; font-weight: bold; border-bottom: 2px dashed #f06292; }
-        .btn { background: white; border: 2px solid var(--cinna-blue); padding: 12px; border-radius: 12px; cursor: pointer; font-size: 1rem; }
-        .btn:active { background: var(--cinna-blue); color: white; }
-        .answer-input { width: 100px; font-size: 1.5rem; border: none; border-bottom: 3px solid var(--cinna-pink); text-align: center; margin: 10px; }
-        .reward { font-size: 4rem; display: none; }
+        
+        .step-box { background: #f1f8e9; border-radius: 15px; padding: 15px; margin-top: 15px; border-left: 5px solid #8bc34a; text-align: left; }
+        .btn { background: white; border: 2px solid var(--cinna-blue); padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; margin: 2px; }
+        .btn-main { background: var(--cinna-pink); color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 1.2rem; margin-top: 10px; box-shadow: 0 4px 0 #f06292; }
+        
+        input { width: 80px; font-size: 1.2rem; border: none; border-bottom: 2px solid var(--cinna-pink); text-align: center; outline: none; }
+        .reward { font-size: 3rem; display: none; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h3 style="color:var(--cinna-blue)">🧁 無限應用題挑戰</h3>
-        <div id="problem-display" class="problem-text">點擊按鈕開始...</div>
-        
-        <div id="step-1">
-            <p>這題要用什麼方法？</p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn" onclick="checkStep1('+')">加法 (+)</button>
-                <button class="btn" onclick="checkStep1('-')">減法 (-)</button>
-                <button class="btn" onclick="checkStep1('x')">乘法 (×)</button>
-                <button class="btn" onclick="checkStep1('÷')">除法 (÷)</button>
+        <div class="lvl-selector">
+            <button id="btn-l1" class="lvl-btn active" onclick="setLevel(1)">Level 1<br><small>一步運算</small></button>
+            <button id="btn-l2" class="lvl-btn" onclick="setLevel(2)">Level 2<br><small>兩步運算</small></button>
+        </div>
+
+        <div id="problem-display" class="problem-text">載入中...</div>
+        <button onclick="speakProblem()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🔊 讀題</button>
+
+        <div id="step-logic" style="margin-top:15px;">
+            <p id="logic-title" style="font-weight:bold; color:#546e7a;">這題要怎麼算？</p>
+            <div id="op-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                </div>
+        </div>
+
+        <div id="step-answer" style="display:none; margin-top:15px;">
+            <div class="step-box">
+                <p style="margin:0 0 10px 0;">🌟 <b>計算挑戰：</b></p>
+                <input type="number" id="final-ans" inputmode="numeric"> 元 / 個 / 粒
             </div>
+            <button class="btn-main" onclick="checkFinal()">提交答案</button>
         </div>
 
-        <div id="step-2" style="display:none; margin-top:20px;">
-            <p>答案是多少？</p>
-            <input type="number" id="user-ans" class="answer-input" inputmode="numeric">
-            <button class="btn" style="background:var(--cinna-pink); color:white; border:none;" onclick="checkStep2()">提交</button>
-        </div>
-
-        <div id="reward" class="reward">✨</div>
-        <button id="next-btn" class="btn" style="display:none; width:100%; margin-top:20px;" onclick="generateProblem()">下一題 🚀</button>
+        <div id="reward" class="reward">🍭</div>
+        <button id="next-btn" class="btn-main" style="display:none; background:#81c784; box-shadow:0 4px 0 #66bb6a;" onclick="generateProblem()">下一題 🚀</button>
     </div>
 
     <script>
+        let currentLevel = 1;
         let currentProblem = {};
+        const items = ["糖果", "貼紙", "巧克力", "蘋果", "文具", "小蛋糕"];
 
-        const templates = [
-            {
-                type: 'x',
-                getText: (n1, n2, item) => `玉桂狗有 ${n1} 盒${item}，每盒有 ${n2} 個，<span class='keyword'>一共有</span>${item}多少個？`,
-                hint: "每盒有相同數量，求總數要用『乘法』喔！"
+        function setLevel(l) {
+            currentLevel = l;
+            document.getElementById('btn-l1').className = 'lvl-btn' + (l==1?' active':'');
+            document.getElementById('btn-l2').className = 'lvl-btn' + (l==2?' active':'');
+            generateProblem();
+        }
+
+        const templatesL1 = [
+            { type: 'x', get: (n1, n2, i) => [`玉桂狗買了 ${n1} 盒${i}，每盒有 ${n2} 粒，<span class='keyword'>一共有</span>多少粒？`, n1*n2, "『每盒有』配『一共』要用乘法。"] },
+            { type: '÷', get: (n1, n2, i) => [`老師有 ${n1*n2} 粒${i}，<span class='keyword'>平均分給</span> ${n1} 人，每人有幾粒？`, n2, "『平均分』要用除法。"] }
+        ];
+
+        const templatesL2 = [
+            { // (A + B) / C
+                type: '(+)/', 
+                get: (n1, n2, i) => {
+                    let total = (n1 + n2) * 5; // 確保能被 5 整除
+                    return [`玉桂狗有 ${n1*5} 粒紅${i}和 ${n2*5} 粒黃${i}，他把全部${i}<span class='keyword'>平均分給</span> 5 位朋友，每人得幾粒？`, (n1*5+n2*5)/5, "先加起總數，再除以人數。"];
+                }
             },
-            {
-                type: '÷',
-                getText: (n1, n2, item) => `老師有 ${n1 * n2} 粒${item}，<span class='keyword'>平均分給</span> ${n1} 位同學，每人可得${item}多少粒？`,
-                hint: "『平均分配』是『除法』的關鍵信號！"
-            },
-            {
-                type: '-',
-                getText: (n1, n2, item) => `商店原有 ${n1+n2} 個${item}，今天<span class='keyword'>賣出了</span> ${n2} 個，還<span class='keyword'>剩下</span>多少個？`,
-                hint: "數量變少了，求剩下的要用『減法』。"
-            },
-            {
-                type: '+',
-                getText: (n1, n2, item) => `小明買了 ${n1} 個${item}，媽媽再送給他 ${n2} 個，他<span class='keyword'>現在共有</span>多少個？`,
-                hint: "數量增加了，求總數用『加法』。"
+            { // A - (B * C)
+                type: '-(x)',
+                get: (n1, n2, i) => {
+                    let price = 8;
+                    let pay = 100;
+                    return [`媽媽給了玉桂狗 $${pay}，他買了 ${n1} 個每個 $${price} 的${i}，應<span class='keyword'>找回</span>多少錢？`, pay - (n1*price), "先算出總花費 (乘法)，再用減法算找贖。"];
+                }
             }
         ];
 
-        const items = ["糖果", "甜甜圈", "貼紙", "巧克力", "文具", "蘋果"];
-
         function generateProblem() {
-            const temp = templates[Math.floor(Math.random() * templates.length)];
-            const item = items[Math.floor(Math.random() * items.length)];
-            const n1 = Math.floor(Math.random() * 10) + 2;
-            const n2 = Math.floor(Math.random() * 8) + 2;
-
-            let ans;
-            if (temp.type === 'x') ans = n1 * n2;
-            else if (temp.type === '÷') ans = n2; // n1*n2 / n1
-            else if (temp.type === '-') ans = n1; // (n1+n2) - n2
-            else ans = n1 + n2;
-
-            currentProblem = { text: temp.getText(n1, n2, item), type: temp.type, ans: ans, hint: temp.hint };
+            const list = (currentLevel === 1) ? templatesL1 : templatesL2;
+            const temp = list[Math.floor(Math.random() * list.length)];
+            const i = items[Math.floor(Math.random() * items.length)];
+            const n1 = Math.floor(Math.random() * 8) + 2;
+            const n2 = Math.floor(Math.random() * 5) + 2;
             
-            document.getElementById('problem-display').innerHTML = currentProblem.text;
-            document.getElementById('step-1').style.display = 'block';
-            document.getElementById('step-2').style.display = 'none';
+            const [text, ans, hint] = temp.get(n1, n2, i);
+            currentProblem = { text, ans, hint, type: temp.type };
+
+            document.getElementById('problem-display').innerHTML = text;
+            document.getElementById('step-logic').style.display = 'block';
+            document.getElementById('step-answer').style.display = 'none';
             document.getElementById('reward').style.display = 'none';
             document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('user-ans').value = '';
+            document.getElementById('final-ans').value = '';
             
-            speak(document.getElementById('problem-display').innerText);
+            setupLogicButtons();
+            speakProblem();
         }
 
-        function checkStep1(op) {
-            if (op === currentProblem.type) {
-                speak("答對了！運算正確。");
-                document.getElementById('step-1').style.display = 'none';
-                document.getElementById('step-2').style.display = 'block';
-            } else {
-                speak("再想一想，" + currentProblem.hint);
-            }
+        function setupLogicButtons() {
+            const container = document.getElementById('op-container');
+            container.innerHTML = '';
+            const ops = (currentLevel === 1) ? ['+', '-', 'x', '÷'] : ['先加後除', '先乘後減', '先減後乘', '連乘法'];
+            const correctMap = { 'x':'x', '÷':'÷', '(+)/':'先加後除', '-(x)':'先乘後減' };
+
+            ops.forEach(op => {
+                const b = document.createElement('button');
+                b.className = 'btn';
+                b.innerText = op;
+                b.onclick = () => {
+                    if(op === correctMap[currentProblem.type]) {
+                        speak("正確！開始計算吧。");
+                        document.getElementById('step-logic').style.display = 'none';
+                        document.getElementById('step-answer').style.display = 'block';
+                    } else {
+                        speak("不對喔，" + currentProblem.hint);
+                    }
+                };
+                container.appendChild(b);
+            });
         }
 
-        function checkStep2() {
-            if (parseInt(document.getElementById('user-ans').value) === currentProblem.ans) {
-                speak("太棒了！計算正確。");
+        function checkFinal() {
+            const val = parseInt(document.getElementById('final-ans').value);
+            if(val === currentProblem.ans) {
+                speak("太聰明了！算對了！");
                 document.getElementById('reward').style.display = 'block';
                 document.getElementById('next-btn').style.display = 'block';
-                document.getElementById('step-2').style.display = 'none';
+                document.getElementById('step-answer').style.display = 'none';
             } else {
-                speak("算錯了，再試一次！");
+                speak("計算錯了，再檢查一下。");
             }
+        }
+
+        function speakProblem() {
+            const u = new SpeechSynthesisUtterance(document.getElementById('problem-display').innerText.replace(/<[^>]*>/g, ''));
+            u.lang = 'zh-HK'; u.rate = 0.8; window.speechSynthesis.speak(u);
         }
 
         function speak(t) {
             const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'zh-HK'; u.rate = 0.8;
-            window.speechSynthesis.speak(u);
+            u.lang = 'zh-HK'; window.speechSynthesis.speak(u);
         }
 
         window.onload = generateProblem;
