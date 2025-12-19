@@ -1,99 +1,508 @@
-if (gameMode === 'mix') {
-    if (level === 1) {
-        // Lv.1：簡單但加單位轉換
-        const ops = ['+', '-', '×'];
-        const op = ops[Math.floor(Math.random()*3)];
-        let a = Math.floor(Math.random()*20)+5;
-        let b = Math.floor(Math.random()*10)+2;
-        if(op==='-') { if(a<b) [a,b]=[b,a]; correctMath=a-b; }
-        else if(op==='×') { a=Math.floor(Math.random()*9)+2; b=Math.floor(Math.random()*9)+2; correctMath=a*b; }
-        else correctMath=a+b;
-        qHtml = `${a} ${op} ${b} = ? <br><small>（單位是「個」或「元」）</small>`;
-    }
-    else if (level === 2) {
-        // Lv.2：全部兩步文字題（更難）
-        const type = Math.floor(Math.random()*5);
-        let n1, n2, n3, ans;
-        if(type === 0) {
-            n1 = Math.floor(Math.random()*30)+20;
-            n2 = Math.floor(Math.random()*10)+5;
-            n3 = Math.floor(Math.random()*5)+2;
-            qHtml = `玉桂狗有 ${n1} 顆糖，送咗 ${n2} 顆畀朋友，<br>又吃了 ${n3} 顆，<br>仲剩幾多顆？`;
-            ans = n1 - n2 - n3;
-        } else if(type === 1) {
-            n1 = Math.floor(Math.random()*6)+3;
-            n2 = Math.floor(Math.random()*4)+2;
-            n3 = Math.floor(Math.random()*5)+2;
-            qHtml = `一盒有 ${n1} 枝筆，買咗 ${n2} 盒，<br>每枝賣 ${n3} 元，總共可以賣幾多錢？`;
-            ans = n1 * n2 * n3;
-        } else if(type === 2) {
-            n1 = Math.floor(Math.random()*40)+20;
-            n2 = Math.floor(Math.random()*15)+5;
-            n3 = Math.floor(Math.random()*10)+3;
-            qHtml = `小明有 ${n1} 張卡紙，用咗 ${n2} 張做手工，<br>媽媽又畀咗 ${n3} 張佢，<br>而家有幾多張？`;
-            ans = n1 - n2 + n3;
-        } else if(type === 3) {
-            n1 = Math.floor(Math.random()*8)+3;
-            n2 = Math.floor(Math.random()*6)+4;
-            n3 = n1 * n2;
-            qHtml = `有 ${n3} 粒糖果，要平均分畀 ${n2} 個小朋友，<br>每人可以分到幾粒？`;
-            ans = n1;
-        } else {
-            n1 = Math.floor(Math.random()*5)+2;
-            n2 = Math.floor(Math.random()*20)+10;
-            n3 = Math.floor(Math.random()*30)+10;
-            qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
-            ans = n1 * n2 + n3;
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>玉桂狗 P3 數學特訓 (20分鐘挑戰)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --cinna-blue: #b3e5fc; --cinna-dark: #0288d1; --cinna-pink: #ffc1e3; --bg: #f0f8ff; }
+        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); background-image: radial-gradient(#ffffff 20%, transparent 20%), radial-gradient(#ffffff 20%, transparent 20%); background-position: 0 0, 50px 50px; background-size: 100px 100px; text-align: center; margin: 0; padding: 10px; user-select: none; }
+       
+        .game-container { background: rgba(255,255,255,0.95); border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 480px; margin: 10px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+       
+        h2 { color: var(--cinna-dark); margin: 5px 0 15px 0; font-family: 'Fredoka One', cursive; }
+       
+        .avatar-box { font-size: 4rem; margin-bottom: -10px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .category-btn { background: var(--cinna-pink); color: #880e4f; border: none; padding: 15px; border-radius: 20px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin: 8px 0; width: 100%; box-shadow: 0 4px 0 #f06292; transition: transform 0.1s; }
+        .category-btn:active { transform: translateY(4px); box-shadow: none; }
+        .level-btn { background: #b3e5fc; color: #01579b; box-shadow: 0 4px 0 #81d4fa; }
+       
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: #e0f7fa; padding: 10px 15px; border-radius: 20px; margin-bottom: 15px; font-weight: bold; color: #006064; }
+       
+        .sticker-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 15px 0; background: #e1f5fe; padding: 10px; border-radius: 15px; }
+        .sticker-slot { aspect-ratio: 1; background: #fff; border-radius: 10px; border: 2px dashed #b0bec5; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; transition: all 0.3s; position: relative; overflow: hidden; }
+        .sticker-slot.locked { background: #eceff1; color: #cfd8dc; font-size: 1rem; }
+        .sticker-slot.unlocked { background: #fff9c4; border: 2px solid #fdd835; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+       
+        .question { font-size: 1.6rem; color: #37474f; margin: 15px 0; font-weight: bold; min-height: 70px; display: flex; align-items: center; justify-content: center; line-height: 1.4; flex-direction: column; }
+       
+        .input-wrapper { margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .answer-input { width: 120px; font-size: 2.2rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; background: transparent; color: #333; font-family: 'Fredoka One'; padding: 5px; }
+        .time-input { width: 70px; font-size: 2.2rem; border: 3px solid var(--cinna-blue); border-radius: 10px; text-align: center; outline: none; background: #fff; color: #0277bd; font-family: 'Fredoka One'; padding: 5px; }
+        .time-colon { font-size: 2.5rem; font-weight: bold; color: #546e7a; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+       
+        .btn-check { background: linear-gradient(to bottom, #ff4081, #c51162); color: white; border: none; padding: 12px 50px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 15px rgba(233,30,99,0.4); margin-top: 10px; width: 100%; }
+        .btn-home { position: absolute; top: 10px; left: 10px; background: #eceff1; border: none; padding: 5px 10px; border-radius: 10px; color: #546e7a; cursor: pointer; font-size: 0.9rem; z-index: 10; }
+       
+        #clock-canvas { border-radius: 50%; margin: 0 auto 10px; display: none; background: white; border: 4px solid #546e7a; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
+       
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 25px; text-align: center; max-width: 320px; border: 5px solid var(--cinna-blue); }
+    </style>
+</head>
+<body>
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="end-title" style="font-size: 2rem;">時間到！⏰</h2>
+            <p>你收集了 <span id="final-score" style="font-size:2.5rem; color:#e91e63; font-weight:bold;">0</span> 個貼紙！</p>
+            <div id="end-stickers" style="font-size: 2rem; letter-spacing: 5px; margin: 10px 0;"></div>
+            <p id="end-msg" style="color:#546e7a; font-size: 1.1rem; margin-bottom: 20px;">下次繼續加油！</p>
+            <button class="category-btn" onclick="location.reload()">再玩一次</button>
+        </div>
+    </div>
+    <div id="start-screen" class="game-container" style="margin-top: 30px;">
+        <div class="avatar-box">☁️🐶</div>
+        <h2>玉桂狗 Emoji 尋寶</h2>
+        <p style="color:#607d8b">回答數學問題，收集 20 個寶藏！<br>不需要下載圖片，隨開隨玩！</p>
+       
+        <div style="margin: 20px 0;">
+            <button class="category-btn" onclick="toggleMenu('mix')">➕➖✖️➗ 混合四則</button>
+            <div id="mix-levels" class="hidden">
+                <button class="category-btn level-btn" onclick="startGame('mix',1)">Lv.1 基礎計算</button>
+                <button class="category-btn level-btn" onclick="startGame('mix',2)">Lv.2 文字應用題</button>
+                <button class="category-btn level-btn" onclick="startGame('mix',3)">Lv.3 括號挑戰</button>
+                <button class="category-btn level-btn" style="background:#ff7043; box-shadow:0 4px 0 #f4511e; color:white;" onclick="startGame('mix',4)">Lv.4 超難綜合</button>
+            </div>
+        </div>
+       
+        <div style="margin: 20px 0;">
+            <button class="category-btn" onclick="toggleMenu('time')">⏰ 時間大師</button>
+            <div id="time-levels" class="hidden">
+                <button class="category-btn level-btn" onclick="startGame('time',1)">Lv.1 鐘面讀數</button>
+                <button class="category-btn level-btn" onclick="startGame('time',2)">Lv.2 時間經過</button>
+                <button class="category-btn level-btn" onclick="startGame('time',3)">Lv.3 24小時制</button>
+                <button class="category-btn level-btn" style="background:#ff7043; box-shadow:0 4px 0 #f4511e; color:white;" onclick="startGame('time',4)">Lv.4 時間挑戰</button>
+            </div>
+        </div>
+    </div>
+    <div id="game-screen" class="game-container hidden">
+        <button class="btn-home" onclick="location.reload()">🏠 退出</button>
+       
+        <div class="top-bar">
+            <div class="timer-box">⏳ <span id="timer-display">20:00</span></div>
+            <div style="font-size:1.2rem; color:#0288d1;">🎒 <span id="progress-display">0/20</span></div>
+        </div>
+        <div class="sticker-grid" id="sticker-grid"></div>
+        <canvas id="clock-canvas" width="160" height="160"></canvas>
+       
+        <div id="question-area" class="question">載入中...</div>
+        <div id="feedback" style="height: 25px; color: #e91e63; font-weight: bold; font-size: 1.1rem;"></div>
+       
+        <div id="input-container">
+            <div id="input-math" class="input-wrapper hidden">
+                <input type="tel" inputmode="numeric" pattern="[0-9]*" id="answer-math" class="answer-input" placeholder="?" onkeydown="if(event.key==='Enter') checkAnswer()">
+            </div>
+            <div id="input-time" class="input-wrapper hidden">
+                <input type="tel" inputmode="numeric" pattern="[0-9]*" id="answer-h" class="time-input" placeholder="時" maxlength="2"
+                       oninput="if(this.value.length==2) document.getElementById('answer-m').focus()"
+                       onkeydown="if(event.key==='Enter') document.getElementById('answer-m').focus()">
+                <span style="font-size:2rem; font-weight:bold; color:#546e7a">:</span>
+                <input type="tel" inputmode="numeric" pattern="[0-9]*" id="answer-m" class="time-input" placeholder="分" maxlength="2"
+                       onkeydown="if(event.key==='Enter') checkAnswer()">
+            </div>
+        </div>
+        <div>
+            <button class="btn-check" onclick="checkAnswer()">提交答案</button>
+        </div>
+    </div>
+    <script>
+        // --- 遊戲設定 ---
+        const emojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🦄','🐝','🐞','🦋','🐢'];
+        let collected = new Set();
+        let totalStickers = 20;
+        let gameMode = '';
+        let level = 1;
+       
+        let correctMath = 0;
+        let correctH = 0;
+        let correctM = 0;
+       
+        let timerInterval;
+        let timeLeft = 20 * 60;
+        let clockCtx;
+       
+        function toggleMenu(id) {
+            document.querySelectorAll('[id$="-levels"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id + '-levels').classList.remove('hidden');
         }
-        qHtml += `<br><small>（提示：可以用紙筆一步一步算）</small>`;
-        correctMath = ans;
-    }
-    else if (level === 3) {
-        // Lv.3：括號 + 多步
-        let a = Math.floor(Math.random()*10)+5;
-        let b = Math.floor(Math.random()*8)+2;
-        let c = Math.floor(Math.random()*6)+2;
-        let op1 = Math.random() > 0.5 ? '+' : '-';
-        qHtml = `(${a} ${op1} ${b}) × ${c} = ?`;
-        correctMath = op1 === '+' ? (a + b) * c : (a - b) * c;
-    }
-    else if (level === 4) {
-        // Lv.4：超難（保留原 5 種 + 更嚴格計算）
-        const type = Math.floor(Math.random() * 5);
-        let n1, n2, n3, n4, ans;
-        if (type === 0) {
-            n1 = Math.floor(Math.random()*50)+30;
-            n2 = Math.floor(Math.random()*10)+5;
-            n3 = Math.floor(Math.random()*8)+3;
-            qHtml = `一條繩長 ${n1} 厘米，剪咗 ${n2} 厘米畀小狗，<br>再剪 ${n3} 厘米畀玉桂狗，<br>仲剩幾多厘米？`;
-            ans = n1 - n2 - n3;
-        } else if (type === 1) {
-            let people = Math.floor(Math.random()*4)+2;
-            let perPerson = Math.floor(Math.random()*6)+2;
-            n3 = people * perPerson;
-            qHtml = `有一袋糖共 ${n3} 粒，<br>平均分畀 ${people} 個小朋友，<br>每人有幾粒？`;
-            ans = perPerson;
-        } else if (type === 2) {
-            let chicken = Math.floor(Math.random()*5)+1;
-            let rabbit = Math.floor(Math.random()*5)+1;
-            let heads = chicken + rabbit;
-            let legs = (chicken * 2) + (rabbit * 4);
-            qHtml = `農場有雞同兔，數頭有 ${heads} 隻，<br>數腳有 ${legs} 隻。<br>請問有幾多隻雞？`;
-            ans = chicken;
-        } else if (type === 3) {
-            n1 = Math.floor(Math.random()*4)+2;
-            n2 = Math.floor(Math.random()*30)+20;
-            n3 = Math.floor(Math.random()*50)+10;
-            qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
-            ans = n1 * n2 + n3;
-        } else {
-            n1 = Math.floor(Math.random()*10)+5;
-            n2 = Math.floor(Math.random()*20)+10;
-            n3 = Math.floor(Math.random()*5)+2;
-            qHtml = `玉桂狗吃了 ${n2} 顆糖後仲有 ${n3} 顆，<br>原本有幾多顆糖？`;
-            ans = n2 + n3;
+       
+        function startGame(mode, lvl) {
+            gameMode = mode;
+            level = lvl;
+            collected.clear();
+            timeLeft = 20 * 60;
+           
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('clock-canvas').style.display = (mode === 'time') ? 'block' : 'none';
+           
+            document.getElementById('input-math').classList.toggle('hidden', mode === 'time');
+            document.getElementById('input-time').classList.toggle('hidden', mode !== 'time');
+           
+            if(mode === 'time') initClock();
+           
+            initGrid();
+            startTimer();
+            generateQuestion();
         }
-        qHtml += `<br><small>（提示：可以用紙筆畫一畫喔！）</small>`;
-        correctMath = ans;
-    }
-}
+       
+        function initGrid() {
+            const grid = document.getElementById('sticker-grid');
+            grid.innerHTML = '';
+            for(let i=0; i<totalStickers; i++) {
+                let div = document.createElement('div');
+                div.className = 'sticker-slot locked';
+                div.id = `slot-${i}`;
+                div.innerText = i + 1;
+                grid.appendChild(div);
+            }
+            updateProgress();
+        }
+       
+        function unlockSticker() {
+            let available = [];
+            for(let i=0; i<totalStickers; i++) {
+                if(!collected.has(i)) available.push(i);
+            }
+            if(available.length > 0) {
+                let idx = available[Math.floor(Math.random() * available.length)];
+                collected.add(idx);
+               
+                let slot = document.getElementById(`slot-${idx}`);
+                slot.className = 'sticker-slot unlocked';
+                slot.innerText = emojis[idx];
+               
+                updateProgress();
+                if(collected.size === totalStickers) {
+                    setTimeout(() => gameOver(true), 1000);
+                }
+            }
+        }
+       
+        function updateProgress() {
+            document.getElementById('progress-display').innerText = `${collected.size}/${totalStickers}`;
+        }
+       
+        function startTimer() {
+            clearInterval(timerInterval);
+            updateTimerUI();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerUI();
+                if (timeLeft <= 0) gameOver(false);
+            }, 1000);
+        }
+       
+        function updateTimerUI() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(timeLeft < 60) document.getElementById('timer-display').style.color = 'red';
+        }
+       
+        function gameOver(isWin) {
+            clearInterval(timerInterval);
+            document.getElementById('game-over-modal').style.display = 'flex';
+            document.getElementById('final-score').innerText = collected.size;
+           
+            let stickerStr = "";
+            collected.forEach(idx => stickerStr += emojis[idx] + " ");
+            document.getElementById('end-stickers').innerText = stickerStr;
+           
+            if(isWin) {
+                document.getElementById('end-title').innerText = "🎉 尋寶成功！";
+                document.getElementById('end-msg').innerHTML = "太棒了！<br>你找齊了所有寶藏！";
+                speak("太棒了！挑戰成功！");
+            } else {
+                document.getElementById('end-title').innerText = "時間到！⏰";
+                document.getElementById('end-msg').innerText = "差一點點！下次再試試看！";
+                speak("時間到了，下次加油！");
+            }
+        }
+       
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'zh-HK';
+                window.speechSynthesis.speak(u);
+            }
+        }
+       
+        function initClock() {
+            const c = document.getElementById('clock-canvas');
+            if(c) clockCtx = c.getContext('2d');
+        }
+       
+        function drawClock(h, m) {
+            if(!clockCtx) return;
+            const ctx = clockCtx;
+            ctx.clearRect(0,0,160,160);
+            ctx.save();
+            ctx.translate(80,80);
+           
+            ctx.beginPath(); ctx.arc(0,0,70,0,2*Math.PI);
+            ctx.fillStyle='white'; ctx.fill();
+            ctx.lineWidth = 4; ctx.strokeStyle='#546e7a'; ctx.stroke();
+           
+            ctx.fillStyle='#333'; ctx.font="bold 14px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+            for(let i=1; i<=12; i++) {
+                let ang = i * Math.PI / 6;
+                ctx.fillText(i, Math.sin(ang)*58, -Math.cos(ang)*58);
+            }
+           
+            drawHand(ctx, (h%12)*30 + m*0.5, 40, 5, '#333');
+            drawHand(ctx, m*6, 55, 3, '#e91e63');
+           
+            ctx.beginPath(); ctx.arc(0,0,5,0,2*Math.PI); ctx.fillStyle='#333'; ctx.fill();
+            ctx.restore();
+        }
+       
+        function drawHand(ctx, deg, len, w, color) {
+            let rad = (deg-90) * Math.PI/180;
+            ctx.beginPath(); ctx.lineWidth=w; ctx.lineCap="round"; ctx.strokeStyle=color;
+            ctx.moveTo(0,0); ctx.lineTo(Math.cos(rad)*len, Math.sin(rad)*len); ctx.stroke();
+        }
+       
+        function generateQuestion() {
+            document.getElementById('answer-math').value = '';
+            document.getElementById('answer-h').value = '';
+            document.getElementById('answer-m').value = '';
+            document.getElementById('feedback').innerText = '';
+           
+            if(gameMode === 'time') document.getElementById('answer-h').focus();
+            else document.getElementById('answer-math').focus();
+           
+            let qHtml = '';
+           
+            if (gameMode === 'mix') {
+                if (level === 1) {
+                    const ops = ['+', '-', '×'];
+                    const op = ops[Math.floor(Math.random()*3)];
+                    let a = Math.floor(Math.random()*20)+5;
+                    let b = Math.floor(Math.random()*10)+2;
+                    if(op==='-') { if(a<b) [a,b]=[b,a]; correctMath=a-b; }
+                    else if(op==='×') { a=Math.floor(Math.random()*9)+2; b=Math.floor(Math.random()*9)+2; correctMath=a*b; }
+                    else correctMath=a+b;
+                    qHtml = `${a} ${op} ${b} = ? <br><small>（單位是「個」或「元」）</small>`;
+                }
+                else if (level === 2) {
+                    const type = Math.floor(Math.random()*5);
+                    let n1, n2, n3, ans;
+                    if(type === 0) {
+                        n1 = Math.floor(Math.random()*30)+20;
+                        n2 = Math.floor(Math.random()*10)+5;
+                        n3 = Math.floor(Math.random()*5)+2;
+                        qHtml = `玉桂狗有 ${n1} 顆糖，送咗 ${n2} 顆畀朋友，<br>又吃了 ${n3} 顆，<br>仲剩幾多顆？`;
+                        ans = n1 - n2 - n3;
+                    } else if(type === 1) {
+                        n1 = Math.floor(Math.random()*6)+3;
+                        n2 = Math.floor(Math.random()*4)+2;
+                        n3 = Math.floor(Math.random()*5)+2;
+                        qHtml = `一盒有 ${n1} 枝筆，買咗 ${n2} 盒，<br>每枝賣 ${n3} 元，總共可以賣幾多錢？`;
+                        ans = n1 * n2 * n3;
+                    } else if(type === 2) {
+                        n1 = Math.floor(Math.random()*40)+20;
+                        n2 = Math.floor(Math.random()*15)+5;
+                        n3 = Math.floor(Math.random()*10)+3;
+                        qHtml = `小明有 ${n1} 張卡紙，用咗 ${n2} 張做手工，<br>媽媽又畀咗 ${n3} 張佢，<br>而家有幾多張？`;
+                        ans = n1 - n2 + n3;
+                    } else if(type === 3) {
+                        n1 = Math.floor(Math.random()*8)+3;
+                        n2 = Math.floor(Math.random()*6)+4;
+                        n3 = n1 * n2;
+                        qHtml = `有 ${n3} 粒糖果，要平均分畀 ${n2} 個小朋友，<br>每人可以分到幾粒？`;
+                        ans = n1;
+                    } else {
+                        n1 = Math.floor(Math.random()*5)+2;
+                        n2 = Math.floor(Math.random()*20)+10;
+                        n3 = Math.floor(Math.random()*30)+10;
+                        qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
+                        ans = n1 * n2 + n3;
+                    }
+                    qHtml += `<br><small>（提示：可以用紙筆一步一步算）</small>`;
+                    correctMath = ans;
+                }
+                else if (level === 3) {
+                    let a = Math.floor(Math.random()*10)+5;
+                    let b = Math.floor(Math.random()*8)+2;
+                    let c = Math.floor(Math.random()*6)+2;
+                    let op1 = Math.random() > 0.5 ? '+' : '-';
+                    qHtml = `(${a} ${op1} ${b}) × ${c} = ?`;
+                    correctMath = op1 === '+' ? (a + b) * c : (a - b) * c;
+                }
+                else if (level === 4) {
+                    const type = Math.floor(Math.random() * 5);
+                    let n1, n2, n3, n4, ans;
+                    if (type === 0) {
+                        n1 = Math.floor(Math.random()*50)+30;
+                        n2 = Math.floor(Math.random()*10)+5;
+                        n3 = Math.floor(Math.random()*8)+3;
+                        qHtml = `一條繩長 ${n1} 厘米，剪咗 ${n2} 厘米畀小狗，<br>再剪 ${n3} 厘米畀玉桂狗，<br>仲剩幾多厘米？`;
+                        ans = n1 - n2 - n3;
+                    } else if (type === 1) {
+                        let people = Math.floor(Math.random()*4)+2;
+                        let perPerson = Math.floor(Math.random()*6)+2;
+                        n3 = people * perPerson;
+                        qHtml = `有一袋糖共 ${n3} 粒，<br>平均分畀 ${people} 個小朋友，<br>每人有幾粒？`;
+                        ans = perPerson;
+                    } else if (type === 2) {
+                        let chicken = Math.floor(Math.random()*5)+1;
+                        let rabbit = Math.floor(Math.random()*5)+1;
+                        let heads = chicken + rabbit;
+                        let legs = (chicken * 2) + (rabbit * 4);
+                        qHtml = `農場有雞同兔，數頭有 ${heads} 隻，<br>數腳有 ${legs} 隻。<br>請問有幾多隻雞？`;
+                        ans = chicken;
+                    } else if (type === 3) {
+                        n1 = Math.floor(Math.random()*4)+2;
+                        n2 = Math.floor(Math.random()*30)+20;
+                        n3 = Math.floor(Math.random()*50)+10;
+                        qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
+                        ans = n1 * n2 + n3;
+                    } else {
+                        n1 = Math.floor(Math.random()*10)+5;
+                        n2 = Math.floor(Math.random()*20)+10;
+                        n3 = Math.floor(Math.random()*5)+2;
+                        qHtml = `玉桂狗吃了 ${n2} 顆糖後仲有 ${n3} 顆，<br>原本有幾多顆糖？`;
+                        ans = n2 + n3;
+                    }
+                    qHtml += `<br><small>（提示：可以用紙筆畫一畫喔！）</small>`;
+                    correctMath = ans;
+                }
+            }
+            else if (gameMode === 'time') {
+                if (level === 1) {
+                    let h = Math.floor(Math.random()*12)+1;
+                    let m = [0,15,30,45][Math.floor(Math.random()*4)];
+                    drawClock(h, m);
+                    qHtml = `鐘面上的時間是？`;
+                    correctH = h; correctM = m;
+                }
+                else if (level === 2) {
+                    let startH = Math.floor(Math.random()*8)+1;
+                    let startM = [0,30][Math.floor(Math.random()*2)];
+                    let durH = Math.floor(Math.random()*2)+1;
+                    let durM = [0,30][Math.floor(Math.random()*2)];
+                    drawClock(startH, startM);
+                   
+                    let totalMin = (startH*60 + startM) + (durH*60 + durM);
+                    let finalH = Math.floor(totalMin/60);
+                    let finalM = totalMin%60;
+                    let displayH = finalH % 12 || 12;
+                   
+                    qHtml = `現在是 ${startH}:${startM===0?'00':30}，<br>經過 ${durH}小時${durM===0?'':durM+'分'}後是幾點？`;
+                    correctH = displayH; correctM = finalM;
+                }
+                else if (level === 3) {
+                    let h12 = Math.floor(Math.random() * 12) + 1;
+                    let m = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+                    let isPM = Math.random() > 0.5;
+                    let period = isPM ? "下午" : "上午";
+                    drawClock(h12, m);
+                    qHtml = `現在是 <span style="color:#e91e63">${period}</span>，<br>請用「24 小時制」輸入時間。`;
+                    let ansH = h12;
+                    if (isPM) { if (h12 !== 12) ansH += 12; }
+                    else { if (h12 === 12) ansH = 0; }
+                    correctH = ansH; correctM = m;
+                }
+                else if (level === 4) {
+                    // Lv.4 時間挑戰：多步時間應用題（火車/巴士/活動時間）
+                    const type = Math.floor(Math.random() * 4);
+                    let startH, startM, durH, durM, ansH, ansM, qHtml;
+                    if (type === 0) { // 火車出發時間
+                        startH = Math.floor(Math.random()*12)+1;
+                        startM = [0,15,30,45][Math.floor(Math.random()*4)];
+                        durH = Math.floor(Math.random()*3)+1;
+                        durM = [0,30][Math.floor(Math.random()*2)];
+                        let totalMin = startH*60 + startM + durH*60 + durM;
+                        ansH = Math.floor(totalMin/60) % 12 || 12;
+                        ansM = totalMin % 60;
+                        qHtml = `火車由 ${startH}:${startM===0?'00':startM} 出發，<br>行咗 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>幾時到站？（12小時制）`;
+                    } else if (type === 1) { // 活動開始結束
+                        startH = Math.floor(Math.random()*8)+7;
+                        startM = 0;
+                        durH = Math.floor(Math.random()*2)+1;
+                        durM = 30;
+                        let totalMin = startH*60 + startM + durH*60 + durM;
+                        ansH = Math.floor(totalMin/60) % 12 || 12;
+                        ansM = totalMin % 60;
+                        qHtml = `派對由朝早 ${startH} 點開始，<br>玩咗 ${durH} 小時 30 分，<br>幾點完結？`;
+                    } else if (type === 2) { // 倒推時間
+                        let endH = Math.floor(Math.random()*12)+1;
+                        let endM = [0,30][Math.floor(Math.random()*2)];
+                        durH = Math.floor(Math.random()*2)+1;
+                        durM = [0,30][Math.floor(Math.random()*2)];
+                        let totalDur = durH*60 + durM;
+                        let startTotal = endH*60 + endM - totalDur;
+                        if (startTotal < 0) startTotal += 12*60;
+                        ansH = Math.floor(startTotal/60) % 12 || 12;
+                        ansM = startTotal % 60;
+                        qHtml = `小明 ${endH}:${endM===0?'00':endM} 到學校，<br>由屋企出發用咗 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>幾點出門？`;
+                    } else { // 24小時制 + 跨日
+                        let h24 = Math.floor(Math.random()*20)+4;
+                        let m = [0,15,30,45][Math.floor(Math.random()*4)];
+                        let addH = Math.floor(Math.random()*3)+1;
+                        let addM = [0,30][Math.floor(Math.random()*2)];
+                        let total = h24*60 + m + addH*60 + addM;
+                        let nextDay = total >= 24*60;
+                        total %= 24*60;
+                        ansH = Math.floor(total/60);
+                        ansM = total % 60;
+                        qHtml = `現在是 24小時制 ${h24.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}，<br>再過 ${addH} 小時 ${addM===0?'':addM+'分'} 後是幾點？<br>${nextDay ? '<small>(可能跨日)</small>' : ''}`;
+                    }
+                    correctH = ansH; correctM = ansM;
+                    qHtml += `<br><small>（提示：可以用 60 分鐘 = 1 小時 計算）</small>`;
+                }
+            }
+            document.getElementById('question-area').innerHTML = qHtml;
+        }
+       
+        function checkAnswer() {
+            let isCorrect = false;
+           
+            if (gameMode === 'mix') {
+                const val = parseInt(document.getElementById('answer-math').value);
+                if(!isNaN(val) && val === correctMath) isCorrect = true;
+            }
+            else if (gameMode === 'time') {
+                const valH = parseInt(document.getElementById('answer-h').value);
+                const valM = parseInt(document.getElementById('answer-m').value);
+               
+                if(!isNaN(valH) && !isNaN(valM) && valH === correctH && valM === correctM) {
+                    isCorrect = true;
+                }
+            }
+           
+            if(isCorrect) {
+                speak("答對了！好叻呀！");
+                document.getElementById('feedback').innerText = "答對了！+1 寶藏✨";
+                document.getElementById('feedback').style.color = "#4caf50";
+               
+                unlockSticker();
+               
+                document.getElementById('answer-math').value = '';
+                document.getElementById('answer-h').value = '';
+                document.getElementById('answer-m').value = '';
+                setTimeout(generateQuestion, 1000);
+            } else {
+                document.getElementById('feedback').innerText = "再算一次看看！💪";
+                document.getElementById('feedback').style.color = "#e91e63";
+                speak("再試一次");
+               
+                if(gameMode === 'time') {
+                    document.getElementById('answer-h').focus();
+                    document.getElementById('answer-h').select();
+                } else {
+                    document.getElementById('answer-math').focus();
+                    document.getElementById('answer-math').select();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
