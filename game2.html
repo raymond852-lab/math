@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗數學冒險 - P3 特訓</title>
+    <title>玉桂狗數學挑戰 - P3 特訓</title>
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
-        body { font-family: 'Arial', sans-serif; background-color: var(--bg); text-align: center; margin: 0; padding: 20px; }
-        .game-container { background: white; border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        body { font-family: 'Arial', sans-serif; background: var(--bg) url('https://4kwallpapers.com/images/wallpapers/cinnamoroll-5k-cute-2880x1800-11712.png') center/cover no-repeat; text-align: center; margin: 0; padding: 20px; }
+        .game-container { background: rgba(255,255,255,0.95); border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         h2 { color: #0288d1; margin-bottom: 10px; }
+        .cinnamon-header { width: 150px; margin-bottom: 10px; border-radius: 50%; }
         .category-btn { background: var(--cinna-pink); color: white; border: none; padding: 15px; border-radius: 20px; font-size: 1.4rem; cursor: pointer; margin: 10px 0; width: 100%; box-shadow: 0 5px 0 #f06292; }
         .level-btn { background: #90caf9; color: white; box-shadow: 0 5px 0 #42a5f5; }
         .question { font-size: 3rem; color: #546e7a; margin: 30px 0; font-weight: bold; min-height: 80px; display: flex; align-items: center; justify-content: center; }
@@ -24,8 +25,9 @@
 </head>
 <body>
     <div id="start-screen" class="game-container">
+        <img src="https://cdn.sanriowiki.com/2/23/Cinnamoroll.png" alt="玉桂狗" class="cinnamon-header">
         <h2>玉桂狗數學挑戰</h2>
-        <p>請先選擇類別，再選難度哦！</p>
+        <p>請先揀類別，再揀難度啦！</p>
         
         <div style="margin: 20px 0;">
             <button class="category-btn" onclick="selectCategory('mix')">➕➖✖️➗ 混合四則</button>
@@ -49,8 +51,8 @@
     <div id="game-screen" class="game-container hidden">
         <div class="score-board">
             <span>難度：<span id="level-display">Lv.?</span></span>
-            <span>得分：<span id="score">0</span></span>
-            <span>剩餘：<span id="timer">30</span>s</span>
+            <span>分數：<span id="score">0</span></span>
+            <span>剩餘：<span id="timer">30</span>秒</span>
         </div>
         <div id="question-text" class="question">準備開始！</div>
         <div id="correct-display" class="correct-answer hidden"></div>
@@ -98,14 +100,14 @@
                 const ops = ['+', '-', '×', '÷'];
                 const op = ops[Math.floor(Math.random() * ops.length)];
 
-                if (level === 1) { // 簡單
+                if (level === 1) {
                     n1 = Math.floor(Math.random() * 10) + 1;
                     n2 = Math.floor(Math.random() * 10) + 1;
-                } else if (level === 2) { // 中等
+                } else if (level === 2) {
                     n1 = Math.floor(Math.random() * 50) + 1;
                     n2 = Math.floor(Math.random() * 20) + 1;
-                } else { // 進階
-                    n1 = Math.floor(Math.random() * 90) + 10; // 10~99
+                } else {
+                    n1 = Math.floor(Math.random() * 90) + 10;
                     n2 = Math.floor(Math.random() * 50) + 10;
                 }
 
@@ -113,7 +115,7 @@
                     correctAnswer = n1 + n2;
                     qText = `${n1} + ${n2}`;
                 } else if (op === '-') {
-                    if (n1 < n2) [n1, n2] = [n2, n1]; // 保證不負數
+                    if (n1 < n2) [n1, n2] = [n2, n1];
                     correctAnswer = n1 - n2;
                     qText = `${n1} - ${n2}`;
                 } else if (op === '×') {
@@ -123,8 +125,7 @@
                     }
                     correctAnswer = n1 * n2;
                     qText = `${n1} × ${n2}`;
-                } else { // ÷
-                    // 保證整除
+                } else {
                     if (level === 1) n2 = Math.floor(Math.random() * 9) + 2;
                     else if (level === 2) n2 = Math.floor(Math.random() * 10) + 2;
                     else n2 = Math.floor(Math.random() * 15) + 2;
@@ -132,20 +133,20 @@
                     correctAnswer = n1 / n2;
                     qText = `${n1} ÷ ${n2}`;
                 }
-            } else { // time
+            } else {
                 let hours, mins;
                 if (level === 1) {
-                    hours = Math.floor(Math.random() * 5) + 1; // 1~5h
-                    mins = Math.floor(Math.random() * 4) * 15; // 0,15,30,45
+                    hours = Math.floor(Math.random() * 5) + 1;
+                    mins = Math.floor(Math.random() * 4) * 15;
                 } else if (level === 2) {
-                    hours = Math.floor(Math.random() * 10) + 1; // 1~10h
+                    hours = Math.floor(Math.random() * 10) + 1;
                     mins = Math.floor(Math.random() * 60);
                 } else {
-                    hours = Math.floor(Math.random() * 23) + 1; // 1~23h
+                    hours = Math.floor(Math.random() * 23) + 1;
                     mins = Math.floor(Math.random() * 60);
                 }
                 correctAnswer = hours * 60 + mins;
-                qText = `${hours}h ${mins}m = ? 分鐘`;
+                qText = `${hours}小時 ${mins}分 = ? 分`;
             }
 
             document.getElementById('question-text').innerText = qText + ' = ?';
@@ -162,12 +163,12 @@
                 document.getElementById('score').innerText = score;
                 showReward();
                 generateQuestion();
-                speak("答對了！好棒！");
+                speak("好叻呀！");
             } else {
                 document.getElementById('answer').style.borderColor = "red";
                 document.getElementById('correct-display').innerHTML = `正確答案：${correctAnswer}`;
                 document.getElementById('correct-display').classList.remove('hidden');
-                speak("錯了，再試試！");
+                speak("唔啱，再試啦！");
                 setTimeout(() => {
                     generateQuestion();
                 }, 1500);
@@ -175,11 +176,11 @@
         }
 
         function showReward() {
-            const rewards = ['🧁', '✨', '🍭', '🍓', '🌟', '💖'];
+            const rewards = ['🧁', '✨', '🍭', '🍓', '🌟', '💖', '<img src="https://static.wikia.nocookie.net/hellokitty/images/a/a5/Mv-cinnamon.png/revision/latest?cb=20250930161135" style="width:60px;">'];
             const r = document.createElement('div');
             r.className = 'reward-pop';
             r.style.left = Math.random() * 70 + 15 + '%';
-            r.innerText = rewards[Math.floor(Math.random() * rewards.length)];
+            r.innerHTML = rewards[Math.floor(Math.random() * rewards.length)];
             document.getElementById('reward-area').appendChild(r);
             setTimeout(() => r.remove(), 1000);
         }
@@ -196,7 +197,7 @@
         }
 
         function endGame() {
-            const msg = `挑戰結束！妳得到了 ${score} 分！真是太厲害了！`;
+            const msg = `挑戰完咗！你得到 ${score} 分！好叻星！`;
             const u = new SpeechSynthesisUtterance(msg);
             u.lang = 'zh-HK';
             window.speechSynthesis.speak(u);
