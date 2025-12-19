@@ -123,9 +123,8 @@
         
         let canvas, ctx, img, clockCtx;
         
-        // --- 這裡使用了 wsrv.nl 代理 Google Drive 連結，防止 CORS 錯誤 ---
-        // 請確保你的 Google Drive 圖片權限是「知道連結的任何人 (Anyone with the link)」
-        const puzzleUrl = 'https://wsrv.nl/?url=drive.google.com/uc?export=download&id=1JOi_l5Nlxo-vK40eThLKz5-qcHSlE5M4';
+        // --- 使用代理服務，解決圖片跨域問題 ---
+        const puzzleUrl = 'https://wsrv.nl/?url=drive.google.com/uc?export=download&id=1JOi_l5Nlxo-vK40eThLKz5-qcHSlE5M4&w=400&h=320&fit=cover';
         
         const tileW = 80, tileH = 80, cols = 5, rows = 4;
         
@@ -199,12 +198,11 @@
             canvas = document.getElementById('puzzle-canvas');
             ctx = canvas.getContext('2d');
             img = new Image();
-            img.crossOrigin = 'anonymous'; // 重要：允許跨域
+            img.crossOrigin = 'anonymous'; 
             
             img.onload = () => drawPuzzle(false);
             img.onerror = () => {
                 console.log("圖片載入失敗，使用 fallback");
-                // 這裡不再 alert 干擾，直接安靜轉為 fallback 模式
                 drawPuzzle(true);
             };
             img.src = puzzleUrl;
@@ -320,7 +318,6 @@
             else document.getElementById('answer-math').focus();
             
             let qHtml = '';
-            let hint = '';
             
             if (gameMode === 'mix') {
                 if (level === 1) {
@@ -359,43 +356,24 @@
                     let n1, n2, n3, n4, ans;
 
                     if (type === 0) { 
-                        // 繩子
-                        n1 = Math.floor(Math.random()*50)+30;
-                        n2 = Math.floor(Math.random()*10)+5;
-                        n3 = Math.floor(Math.random()*8)+3;
+                        n1 = Math.floor(Math.random()*50)+30; n2 = Math.floor(Math.random()*10)+5; n3 = Math.floor(Math.random()*8)+3;
                         qHtml = `一條繩長 ${n1} 厘米，剪咗 ${n2} 厘米畀小狗，<br>再剪 ${n3} 厘米畀玉桂狗，<br>仲剩幾多厘米？`;
                         ans = n1 - n2 - n3;
-                    }
-                    else if (type === 1) {
-                        // 平均分糖
-                        let people = Math.floor(Math.random()*4)+2; 
-                        let perPerson = Math.floor(Math.random()*6)+2; 
-                        n3 = people * perPerson; 
+                    } else if (type === 1) {
+                        let people = Math.floor(Math.random()*4)+2; let perPerson = Math.floor(Math.random()*6)+2; n3 = people * perPerson; 
                         qHtml = `有一袋糖共 ${n3} 粒，<br>平均分畀 ${people} 個小朋友，<br>每人有幾粒？`;
                         ans = perPerson;
-                    }
-                    else if (type === 2) {
-                        // 雞兔同籠
-                        let chicken = Math.floor(Math.random()*5)+1;
-                        let rabbit = Math.floor(Math.random()*5)+1;
-                        let heads = chicken + rabbit;
-                        let legs = (chicken * 2) + (rabbit * 4);
+                    } else if (type === 2) {
+                        let chicken = Math.floor(Math.random()*5)+1; let rabbit = Math.floor(Math.random()*5)+1;
+                        let heads = chicken + rabbit; let legs = (chicken * 2) + (rabbit * 4);
                         qHtml = `農場有雞同兔，數頭有 ${heads} 隻，<br>數腳有 ${legs} 隻。<br>請問有幾多隻雞？`;
                         ans = chicken;
-                    }
-                    else if (type === 3) {
-                        // 打工
-                        n1 = Math.floor(Math.random()*4)+2;
-                        n2 = Math.floor(Math.random()*30)+20;
-                        n3 = Math.floor(Math.random()*50)+10;
+                    } else if (type === 3) {
+                        n1 = Math.floor(Math.random()*4)+2; n2 = Math.floor(Math.random()*30)+20; n3 = Math.floor(Math.random()*50)+10;
                         qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
                         ans = n1 * n2 + n3;
-                    }
-                    else {
-                        // 還原
-                        n1 = Math.floor(Math.random()*10)+5;
-                        n2 = Math.floor(Math.random()*20)+10;
-                        n3 = Math.floor(Math.random()*5)+2;
+                    } else {
+                        n1 = Math.floor(Math.random()*10)+5; n2 = Math.floor(Math.random()*20)+10; n3 = Math.floor(Math.random()*5)+2;
                         qHtml = `玉桂狗吃了 ${n2} 顆糖後仲有 ${n3} 顆，<br>原本有幾多顆糖？`;
                         ans = n2 + n3;
                     }
@@ -416,24 +394,27 @@
                     let startM = [0,30][Math.floor(Math.random()*2)];
                     let durH = Math.floor(Math.random()*2)+1;
                     let durM = [0,30][Math.floor(Math.random()*2)];
-                    
                     drawClock(startH, startM);
                     
                     let totalMin = (startH*60 + startM) + (durH*60 + durM);
                     let finalH = Math.floor(totalMin/60);
                     let finalM = totalMin%60;
-                    
                     let displayH = finalH % 12 || 12;
                     
                     qHtml = `現在是 ${startH}:${startM===0?'00':30}，<br>經過 ${durH}小時${durM===0?'':durM+'分'}後是幾點？`;
                     correctH = displayH; correctM = finalM;
                 }
                 else if (level === 3) {
-                    let h24 = Math.floor(Math.random()*24);
-                    let m = [0,15,30,45][Math.floor(Math.random()*4)];
-                    drawClock(h24 % 12 || 12, m);
-                    qHtml = `24小時制的 ${h24.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}<br>是幾點（12小時制）？`;
-                    correctH = h24 % 12 || 12; correctM = m;
+                    let h12 = Math.floor(Math.random() * 12) + 1;
+                    let m = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+                    let isPM = Math.random() > 0.5;
+                    let period = isPM ? "下午" : "上午";
+                    drawClock(h12, m);
+                    qHtml = `現在是 <span style="color:#e91e63">${period}</span>，<br>請用「24 小時報時制」輸入時間。`;
+                    let ansH = h12;
+                    if (isPM) { if (h12 !== 12) ansH += 12; }
+                    else { if (h12 === 12) ansH = 0; }
+                    correctH = ansH; correctM = m;
                 }
             }
             document.getElementById('question-area').innerHTML = qHtml;
