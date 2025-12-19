@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>玉桂狗數學冒險 - P3 特訓</title>
+    <style>
+        :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
+        body { font-family: 'Arial', sans-serif; background-color: var(--bg); text-align: center; margin: 0; padding: 20px; }
+        .game-container { background: white; border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .question { font-size: 3rem; color: #546e7a; margin: 20px 0; font-weight: bold; }
+        .answer-input { width: 80%; font-size: 2.5rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; margin-bottom: 20px; }
+        .btn-check { background: var(--cinna-pink); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 0 #f06292; }
+        .score-board { display: flex; justify-content: space-around; margin-bottom: 20px; color: #888; font-weight: bold; }
+        .reward-pop { position: absolute; font-size: 3rem; animation: floatUp 1s forwards; pointer-events: none; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen" class="game-container">
+        <h2 style="color: #0288d1;">玉桂狗數學挑戰</h2>
+        <p>選擇挑戰範疇：</p>
+        <button class="btn-check" style="margin-bottom: 10px; width: 100%;" onclick="startGame('mix')">➕➖✖️➗ 混合四則</button>
+        <button class="btn-check" style="width: 100%; background: #90caf9; box-shadow: 0 5px 0 #42a5f5;" onclick="startGame('time')">⏰ 時間轉換</button>
+    </div>
+
+    <div id="game-screen" class="game-container hidden">
+        <div class="score-board">
+            <span>得分：<span id="score">0</span></span>
+            <span>剩餘時間：<span id="timer">30</span>s</span>
+        </div>
+        <div id="question-text" class="question">8 x 7 = ?</div>
+        <input type="number" id="answer" class="answer-input" pattern="\d*" inputmode="numeric" placeholder="?">
+        <br>
+        <button class="btn-check" onclick="checkAnswer()">提交答案</button>
+        <div id="reward-area"></div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let correctAnswer = 0;
+        let timerInterval;
+        let gameMode = 'mix';
+
+        function startGame(mode) {
+            gameMode = mode;
+            score = 0;
+            timeLeft = 30;
+            document.getElementById('score').innerText = score;
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            generateQuestion();
+            startTimer();
+        }
+
+        function generateQuestion() {
+            let qText = "";
+            if (gameMode === 'mix') {
+                const ops = ['+', '-', 'x']; // P3 常用
+                const op = ops[Math.floor(Math.random() * ops.size)]; 
+                let n1 = Math.floor(Math.random() * 50) + 1;
+                let n2 = Math.floor(Math.random() * 20) + 1;
+                
+                if (Math.random() > 0.5) { // 乘法練習
+                    n1 = Math.floor(Math.random() * 12) + 1;
+                    n2 = Math.floor(Math.random() * 9) + 1;
+                    correctAnswer = n1 * n2;
+                    qText = `${n1} × ${n2}`;
+                } else {
+                    correctAnswer = n1 + n2;
+                    qText = `${n1} + ${n2}`;
+                }
+            } else { // 時間轉換
+                const hours = Math.floor(Math.random() * 3) + 1;
+                const mins = Math.floor(Math.random() * 50) + 5;
+                correctAnswer = hours * 60 + mins;
+                qText = `${hours}h ${mins}m = ? min`;
+            }
+            document.getElementById('question-text').innerText = qText;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+        }
+
+        function checkAnswer() {
+            const userAns = parseInt(document.getElementById('answer').value);
+            if (userAns === correctAnswer) {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                showReward();
+                generateQuestion();
+                speak("答對了！");
+            } else {
+                document.getElementById('answer').style.borderColor = "red";
+                setTimeout(() => { document.getElementById('answer').style.borderColor = "var(--cinna-pink)"; }, 500);
+            }
+        }
+
+        function showReward() {
+            const rewards = ['🧁', '✨', '🍭', '🍓'];
+            const r = document.createElement('div');
+            r.className = 'reward-pop';
+            r.style.left = Math.random() * 80 + '%';
+            r.innerText = rewards[Math.floor(Math.random() * rewards.length)];
+            document.getElementById('reward-area').appendChild(r);
+            setTimeout(() => r.remove(), 1000);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            const u = new SpeechSynthesisUtterance(`挑戰結束！妳得到了 ${score} 分！妳真棒！`);
+            u.lang = 'zh-HK'; window.speechSynthesis.speak(u);
+            alert(`挑戰結束！得分：${score}`);
+            location.reload();
+        }
+
+        function speak(text) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'zh-HK'; window.speechSynthesis.speak(u);
+        }
+    </script>
+</body>
+</html>
