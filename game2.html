@@ -3,378 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗 P3 數學限時挑戰</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <title>玉桂狗數學冒險 - P3 特訓</title>
     <style>
-        :root { --cinna-blue: #b3e5fc; --cinna-dark-blue: #0277bd; --cinna-pink: #ffc1e3; --cinna-dark-pink: #ec407a; --bg: #e1f5fe; }
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg); margin: 0; padding: 0; text-align: center; user-select: none; -webkit-user-select: none; }
-        
-        /* 通用佈局 */
-        .screen { display: none; padding: 15px; min-height: 100vh; box-sizing: border-box; flex-direction: column; align-items: center; }
-        .screen.active { display: flex; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: white; border-radius: 25px; border: 4px solid var(--cinna-blue); padding: 20px; width: 100%; max-width: 450px; box-shadow: 0 10px 0 rgba(179,229,252,0.5); margin-bottom: 20px; position: relative; transition: 0.2s; }
-        
-        /* 標題與按鈕 */
-        h1 { color: var(--cinna-dark-blue); font-family: 'Fredoka One', cursive; letter-spacing: 1px; margin-bottom: 5px; }
-        .btn { background: white; border: 2px solid var(--cinna-blue); padding: 15px; border-radius: 20px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 12px; font-weight: bold; color: #546e7a; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 0 #cfd8dc; transition: 0.1s; }
-        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #cfd8dc; }
-        .btn-start { background: var(--cinna-blue); color: var(--cinna-dark-blue); border: none; font-size: 1.3rem; }
-        .btn-primary { background: var(--cinna-pink); color: white; border: none; box-shadow: 0 5px 0 var(--cinna-dark-pink); font-size: 1.3rem; border-radius: 50px; padding: 12px 40px; }
-        .btn-primary:active { transform: translateY(5px); box-shadow: 0 0 0 var(--cinna-dark-pink); }
-        .btn-back { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; color: #777; cursor: pointer; z-index: 100; }
-
-        /* HUD (計時與分數) */
-        .hud-bar { display: flex; justify-content: space-between; width: 100%; max-width: 450px; margin-bottom: 15px; background: white; padding: 10px 20px; border-radius: 50px; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .hud-item { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .timer-danger { color: red; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-
-        /* 遊戲元素 */
-        .math-input { width: 100px; font-size: 1.8rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; background: transparent; color: #333; }
-        .keyword { color: var(--cinna-dark-pink); font-weight: bold; border-bottom: 2px dashed var(--cinna-dark-pink); }
-        #clock-canvas { background: white; border-radius: 50%; border: 6px solid #546e7a; margin: 10px auto; display: block; max-width: 100%; }
-        
-        /* 結算畫面 */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 999; }
-        .modal-content { background: white; padding: 30px; border-radius: 30px; text-align: center; border: 5px solid var(--cinna-pink); animation: popUp 0.5s; max-width: 350px; width: 90%; }
-        @keyframes popUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .reward-overlay { position: fixed; pointer-events:none; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 6rem; opacity: 0; z-index: 500; }
-        .pop-anim { animation: rewardPop 0.8s forwards; }
-        @keyframes rewardPop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; } 100% { transform: translate(-50%, -100px) scale(1); opacity: 0; } }
+        :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
+        body { font-family: 'Arial', sans-serif; background-color: var(--bg); text-align: center; margin: 0; padding: 20px; }
+        .game-container { background: white; border-radius: 30px; border: 4px solid var(--cinna-blue); padding: 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        h2 { color: #0288d1; margin-bottom: 10px; }
+        .category-btn { background: var(--cinna-pink); color: white; border: none; padding: 15px; border-radius: 20px; font-size: 1.4rem; cursor: pointer; margin: 10px 0; width: 100%; box-shadow: 0 5px 0 #f06292; }
+        .level-btn { background: #90caf9; color: white; box-shadow: 0 5px 0 #42a5f5; }
+        .question { font-size: 3rem; color: #546e7a; margin: 30px 0; font-weight: bold; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+        .answer-input { width: 80%; font-size: 2.5rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; margin-bottom: 20px; }
+        .btn-check { background: var(--cinna-pink); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 0 #f06292; }
+        .score-board { display: flex; justify-content: space-around; margin-bottom: 20px; color: #888; font-weight: bold; font-size: 1.1rem; }
+        .reward-pop { position: absolute; font-size: 3rem; animation: floatUp 1s forwards; pointer-events: none; }
+        #reward-area { position: relative; height: 120px; margin: 20px 0; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .hidden { display: none; }
+        .correct-answer { color: #4caf50; font-size: 1.8rem; margin: 10px 0; }
     </style>
 </head>
 <body>
-
-    <div id="reward-display" class="reward-overlay">✨</div>
-
-    <div id="game-over-modal" class="modal">
-        <div class="modal-content">
-            <h2 style="color:var(--cinna-dark-blue)">時間到！⏰</h2>
-            <p style="font-size: 1.2rem; color: #555;">本次得分</p>
-            <div id="final-score" style="font-size: 4rem; color: var(--cinna-dark-pink); font-family:'Fredoka One';">0</div>
-            <button class="btn-primary" onclick="goHome()">回首頁</button>
+    <div id="start-screen" class="game-container">
+        <h2>玉桂狗數學挑戰</h2>
+        <p>請先選擇類別，再選難度哦！</p>
+        
+        <div style="margin: 20px 0;">
+            <button class="category-btn" onclick="selectCategory('mix')">➕➖✖️➗ 混合四則</button>
+            <div id="mix-levels" class="hidden" style="margin-top: 10px;">
+                <button class="category-btn level-btn" style="background:#a5d6a7; box-shadow:0 5px 0 #66bb6a;" onclick="startGame('mix',1)">Lv.1 簡單</button>
+                <button class="category-btn level-btn" onclick="startGame('mix',2)">Lv.2 中等</button>
+                <button class="category-btn level-btn" style="background:#ef9a9a; box-shadow:0 5px 0 #e57373;" onclick="startGame('mix',3)">Lv.3 進階</button>
+            </div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button class="category-btn" onclick="selectCategory('time')">⏰ 時間轉換</button>
+            <div id="time-levels" class="hidden" style="margin-top: 10px;">
+                <button class="category-btn level-btn" style="background:#a5d6a7; box-shadow:0 5px 0 #66bb6a;" onclick="startGame('time',1)">Lv.1 簡單</button>
+                <button class="category-btn level-btn" onclick="startGame('time',2)">Lv.2 中等</button>
+                <button class="category-btn level-btn" style="background:#ef9a9a; box-shadow:0 5px 0 #e57373;" onclick="startGame('time',3)">Lv.3 進階</button>
+            </div>
         </div>
     </div>
 
-    <div id="screen-home" class="screen active">
-        <div style="font-size: 5rem; margin-top: 40px; margin-bottom: 10px;">🐶</div>
-        <h1>數學限時挑戰</h1>
-        <p style="color:#607d8b; margin-bottom: 30px;">每個挑戰只有 2 分鐘！加油！</p>
-        
-        <div class="card" style="border:none; background:none; box-shadow:none;">
-            <button class="btn btn-start" onclick="startGame(1)">
-                <span>⚡ Level 1：速算特訓</span> <span>🚀</span>
-            </button>
-            <button class="btn btn-start" style="background:#b2dfdb; color:#00695c; border-color:#80cbc4;" onclick="startGame(2)">
-                <span>🧠 Level 2：應用題邏輯</span> <span>📝</span>
-            </button>
-            <button class="btn btn-start" style="background:#e1bee7; color:#6a1b9a; border-color:#ce93d8;" onclick="startGame(3)">
-                <span>⏰ Level 3：時間大師</span> <span>⌚</span>
-            </button>
+    <div id="game-screen" class="game-container hidden">
+        <div class="score-board">
+            <span>難度：<span id="level-display">Lv.?</span></span>
+            <span>得分：<span id="score">0</span></span>
+            <span>剩餘：<span id="timer">30</span>s</span>
         </div>
-    </div>
-
-    <div id="screen-game" class="screen">
-        <button class="btn-back" onclick="goHome()">⬅ 放棄</button>
-        
-        <div class="hud-bar">
-            <div class="hud-item" style="color:#546e7a;">
-                <span>⏳</span> <span id="timer-display">02:00</span>
-            </div>
-            <div class="hud-item" style="color:var(--cinna-dark-pink);">
-                <span>🏆</span> <span id="score-display">0</span>
-            </div>
-        </div>
-
-        <div class="card">
-            
-            <div id="game-l1" style="display:none;">
-                <h3 style="color:#999; margin:0;">Level 1 速算</h3>
-                <div id="l1-q" style="font-size:3.5rem; color:#455a64; margin:30px 0; font-family: monospace;"></div>
-                <input type="number" id="l1-ans" class="math-input" placeholder="?" inputmode="numeric">
-                <br><br>
-                <button class="btn-primary" onclick="checkL1()">提交</button>
-            </div>
-
-            <div id="game-l2" style="display:none;">
-                <h3 style="color:#999; margin:0;">Level 2 應用題</h3>
-                <div id="l2-text" style="text-align:left; background:#f1f8e9; padding:15px; border-radius:15px; margin:15px 0; line-height:1.6; font-size:1.1rem;"></div>
-                <button onclick="speakText(document.getElementById('l2-text').innerText)" style="background:none; border:none; cursor:pointer; font-size:1.5rem;">🔊</button>
-                
-                <div id="l2-step1">
-                    <p style="font-weight:bold; color:#0277bd;">這題要用什麼方法？</p>
-                    <div id="l2-ops" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-                </div>
-                <div id="l2-step2" style="display:none;">
-                    <p style="font-weight:bold; color:#ec407a;">答案是多少？</p>
-                    <input type="number" id="l2-ans" class="math-input" inputmode="numeric">
-                    <br><br>
-                    <button class="btn-primary" onclick="checkL2Final()">檢查</button>
-                </div>
-            </div>
-
-            <div id="game-l3" style="display:none;">
-                <h3 style="color:#999; margin:0;">Level 3 時間</h3>
-                <canvas id="clock-canvas" width="200" height="200" style="display:none;"></canvas>
-                <div id="l3-digital-wrap" style="display:none; background:#333; color:#0f0; padding:10px 20px; border-radius:10px; font-size:2rem; margin:10px auto; display:inline-block; font-family:monospace;">00:00</div>
-                
-                <div id="l3-text" style="text-align:left; margin:15px 0;"></div>
-                <button onclick="speakText(document.getElementById('l3-text').innerText)" style="background:none; border:none; font-size:1.5rem;">🔊</button>
-
-                <div style="margin-top:15px;">
-                    <input type="number" id="l3-h" class="math-input" style="width:60px;" placeholder="時"> : 
-                    <input type="number" id="l3-m" class="math-input" style="width:60px;" placeholder="分">
-                </div>
-                <br>
-                <button class="btn-primary" onclick="checkL3()">提交</button>
-            </div>
-
-        </div>
-        <div id="feedback-msg" style="height:30px; color:red; font-weight:bold;"></div>
+        <div id="question-text" class="question">準備開始！</div>
+        <div id="correct-display" class="correct-answer hidden"></div>
+        <input type="number" id="answer" class="answer-input" pattern="\d*" inputmode="numeric" placeholder="?">
+        <br>
+        <button class="btn-check" onclick="checkAnswer()">提交答案</button>
+        <div id="reward-area"></div>
     </div>
 
     <script>
-        // --- 全局變數 ---
         let score = 0;
-        let timeLeft = 120; // 2分鐘
+        let timeLeft = 30;
+        let correctAnswer = 0;
         let timerInterval;
-        let currentLevel = 1;
-        
-        // Level Specific Data
-        let l1Ans = 0;
-        let l2Data = {};
-        let l3Ans = {h:0, m:0};
+        let gameMode = '';
+        let level = 1;
 
-        // --- 核心系統功能 ---
-
-        function goHome() {
-            clearInterval(timerInterval);
-            stopVoice();
-            document.getElementById('game-over-modal').style.display = 'none';
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-home').classList.add('active');
+        function selectCategory(mode) {
+            gameMode = mode;
+            document.getElementById('mix-levels').classList.add('hidden');
+            document.getElementById('time-levels').classList.add('hidden');
+            document.getElementById(mode + '-levels').classList.remove('hidden');
         }
 
-        function startGame(level) {
-            currentLevel = level;
+        function startGame(mode, lvl) {
+            gameMode = mode;
+            level = lvl;
             score = 0;
-            timeLeft = 120; // 2分鐘
-            updateScoreDisplay();
-            updateTimerDisplay();
-            
-            // 切換畫面
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-game').classList.add('active');
-            
-            // 顯示對應關卡 UI
-            document.getElementById('game-l1').style.display = 'none';
-            document.getElementById('game-l2').style.display = 'none';
-            document.getElementById('game-l3').style.display = 'none';
-            document.getElementById('game-l'+level).style.display = 'block';
-
-            // 啟動計時器
+            timeLeft = 30;
+            document.getElementById('score').innerText = score;
+            document.getElementById('level-display').innerText = 'Lv.' + level;
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            generateQuestion();
             startTimer();
+        }
 
-            // 生成第一題
-            if(level === 1) generateL1();
-            if(level === 2) generateL2();
-            if(level === 3) generateL3();
+        function generateQuestion() {
+            document.getElementById('correct-display').classList.add('hidden');
+            document.getElementById('answer').style.borderColor = 'var(--cinna-pink)';
+            let qText = "";
+            let n1, n2;
+
+            if (gameMode === 'mix') {
+                const ops = ['+', '-', '×', '÷'];
+                const op = ops[Math.floor(Math.random() * ops.length)];
+
+                if (level === 1) { // 簡單
+                    n1 = Math.floor(Math.random() * 10) + 1;
+                    n2 = Math.floor(Math.random() * 10) + 1;
+                } else if (level === 2) { // 中等
+                    n1 = Math.floor(Math.random() * 50) + 1;
+                    n2 = Math.floor(Math.random() * 20) + 1;
+                } else { // 進階
+                    n1 = Math.floor(Math.random() * 90) + 10; // 10~99
+                    n2 = Math.floor(Math.random() * 50) + 10;
+                }
+
+                if (op === '+') {
+                    correctAnswer = n1 + n2;
+                    qText = `${n1} + ${n2}`;
+                } else if (op === '-') {
+                    if (n1 < n2) [n1, n2] = [n2, n1]; // 保證不負數
+                    correctAnswer = n1 - n2;
+                    qText = `${n1} - ${n2}`;
+                } else if (op === '×') {
+                    if (level === 3) {
+                        n1 = Math.floor(Math.random() * 12) + 1;
+                        n2 = Math.floor(Math.random() * 12) + 1;
+                    }
+                    correctAnswer = n1 * n2;
+                    qText = `${n1} × ${n2}`;
+                } else { // ÷
+                    // 保證整除
+                    if (level === 1) n2 = Math.floor(Math.random() * 9) + 2;
+                    else if (level === 2) n2 = Math.floor(Math.random() * 10) + 2;
+                    else n2 = Math.floor(Math.random() * 15) + 2;
+                    n1 = n2 * (Math.floor(Math.random() * (level===3?12:10)) + 1);
+                    correctAnswer = n1 / n2;
+                    qText = `${n1} ÷ ${n2}`;
+                }
+            } else { // time
+                let hours, mins;
+                if (level === 1) {
+                    hours = Math.floor(Math.random() * 5) + 1; // 1~5h
+                    mins = Math.floor(Math.random() * 4) * 15; // 0,15,30,45
+                } else if (level === 2) {
+                    hours = Math.floor(Math.random() * 10) + 1; // 1~10h
+                    mins = Math.floor(Math.random() * 60);
+                } else {
+                    hours = Math.floor(Math.random() * 23) + 1; // 1~23h
+                    mins = Math.floor(Math.random() * 60);
+                }
+                correctAnswer = hours * 60 + mins;
+                qText = `${hours}h ${mins}m = ? 分鐘`;
+            }
+
+            document.getElementById('question-text').innerText = qText + ' = ?';
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+        }
+
+        function checkAnswer() {
+            const userAns = parseInt(document.getElementById('answer').value);
+            if (isNaN(userAns)) return;
+
+            if (userAns === correctAnswer) {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                showReward();
+                generateQuestion();
+                speak("答對了！好棒！");
+            } else {
+                document.getElementById('answer').style.borderColor = "red";
+                document.getElementById('correct-display').innerHTML = `正確答案：${correctAnswer}`;
+                document.getElementById('correct-display').classList.remove('hidden');
+                speak("錯了，再試試！");
+                setTimeout(() => {
+                    generateQuestion();
+                }, 1500);
+            }
+        }
+
+        function showReward() {
+            const rewards = ['🧁', '✨', '🍭', '🍓', '🌟', '💖'];
+            const r = document.createElement('div');
+            r.className = 'reward-pop';
+            r.style.left = Math.random() * 70 + 15 + '%';
+            r.innerText = rewards[Math.floor(Math.random() * rewards.length)];
+            document.getElementById('reward-area').appendChild(r);
+            setTimeout(() => r.remove(), 1000);
         }
 
         function startTimer() {
-            clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
-                updateTimerDisplay();
-                if(timeLeft <= 0) {
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
                     endGame();
                 }
             }, 1000);
         }
 
-        function updateTimerDisplay() {
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            let text = `0${m}:${s < 10 ? '0'+s : s}`;
-            const el = document.getElementById('timer-display');
-            el.innerText = text;
-            
-            if(timeLeft <= 10) el.classList.add('timer-danger');
-            else el.classList.remove('timer-danger');
-        }
-
-        function updateScoreDisplay() {
-            document.getElementById('score-display').innerText = score;
-        }
-
-        function addScore(points) {
-            score += points;
-            updateScoreDisplay();
-            // 播放動畫
-            const r = document.getElementById('reward-display');
-            r.innerText = points > 50 ? "🌟 +100" : "✨";
-            r.classList.remove('pop-anim');
-            void r.offsetWidth; // trigger reflow
-            r.classList.add('pop-anim');
-            speakText("答對了");
-        }
-
         function endGame() {
-            clearInterval(timerInterval);
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('game-over-modal').style.display = 'flex';
-            speakText(`時間到，你得到了 ${score} 分！`);
-        }
-
-        function feedback(msg) {
-            const el = document.getElementById('feedback-msg');
-            el.innerText = msg;
-            speakText(msg);
-            setTimeout(() => el.innerText = '', 1500);
-        }
-
-        function speakText(txt) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(txt);
+            const msg = `挑戰結束！妳得到了 ${score} 分！真是太厲害了！`;
+            const u = new SpeechSynthesisUtterance(msg);
             u.lang = 'zh-HK';
-            u.rate = 0.9;
             window.speechSynthesis.speak(u);
+            alert(msg);
+            location.reload();
         }
 
-        function stopVoice() { window.speechSynthesis.cancel(); }
-
-        // --- Level 1 邏輯 (速算) ---
-        function generateL1() {
-            document.getElementById('l1-ans').value = '';
-            const n1 = Math.floor(Math.random() * 12) + 2;
-            const n2 = Math.floor(Math.random() * 9) + 2;
-            if(Math.random() > 0.5) {
-                l1Ans = n1 * n2;
-                document.getElementById('l1-q').innerText = `${n1} × ${n2}`;
-            } else {
-                l1Ans = n1 + n2;
-                document.getElementById('l1-q').innerText = `${n1} + ${n2}`;
-            }
-            document.getElementById('l1-ans').focus();
-        }
-
-        function checkL1() {
-            const val = parseInt(document.getElementById('l1-ans').value);
-            if(val === l1Ans) {
-                addScore(100);
-                generateL1();
-            } else {
-                feedback("再算算看！");
-            }
-        }
-
-        // --- Level 2 邏輯 (應用題) ---
-        const l2Templates = [
-            { t: 'x', get: (n1,n2,i) => ({ txt: `每包有 ${n1} 個${i}，買了 ${n2} 包，<span class='keyword'>共有</span>多少個？`, ans: n1*n2, hint: "求總數用乘法" }) },
-            { t: '÷', get: (n1,n2,i) => ({ txt: `有 ${n1*n2} 個${i}，<span class='keyword'>平均分給</span> ${n2} 人，每人有幾個？`, ans: n1, hint: "平均分用除法" }) },
-            { t: '-', get: (n1,n2,i) => ({ txt: `有 ${n1+n2} 元，買${i}用了 ${n1} 元，<span class='keyword'>找回</span>多少元？`, ans: n2, hint: "找贖用減法" }) }
-        ];
-
-        function generateL2() {
-            document.getElementById('l2-step1').style.display = 'block';
-            document.getElementById('l2-step2').style.display = 'none';
-            document.getElementById('l2-ans').value = '';
-            
-            const temp = l2Templates[Math.floor(Math.random()*l2Templates.length)];
-            const item = ['糖果','貼紙','蘋果','氣球'][Math.floor(Math.random()*4)];
-            const n1 = Math.floor(Math.random()*8)+2;
-            const n2 = Math.floor(Math.random()*5)+2;
-            
-            l2Data = { ...temp.get(n1,n2,item), type: temp.t };
-            document.getElementById('l2-text').innerHTML = l2Data.txt;
-            
-            const opsDiv = document.getElementById('l2-ops');
-            opsDiv.innerHTML = '';
-            ['+','-','x','÷'].forEach(op => {
-                let btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.innerText = op;
-                btn.style.fontSize = '1.5rem';
-                btn.onclick = () => {
-                    if(op === l2Data.type) {
-                        document.getElementById('l2-step1').style.display = 'none';
-                        document.getElementById('l2-step2').style.display = 'block';
-                        document.getElementById('l2-ans').focus();
-                        feedback("觀念正確！");
-                    } else feedback("不對喔，" + l2Data.hint);
-                }
-                opsDiv.appendChild(btn);
-            });
-            speakText(document.getElementById('l2-text').innerText);
-        }
-
-        function checkL2Final() {
-            if(parseInt(document.getElementById('l2-ans').value) === l2Data.ans) {
-                addScore(100);
-                generateL2();
-            } else feedback("算錯了！");
-        }
-
-        // --- Level 3 邏輯 (時間) ---
-        const ctx = document.getElementById('clock-canvas').getContext('2d');
-        
-        function drawClock(h, m) {
-            ctx.clearRect(0,0,200,200); ctx.translate(100,100);
-            ctx.beginPath(); ctx.arc(0,0,90,0,2*Math.PI); ctx.fillStyle='white'; ctx.fill(); ctx.stroke();
-            for(let i=1; i<=12; i++) {
-                ctx.rotate(i*Math.PI/6); ctx.translate(0,-75); ctx.rotate(-i*Math.PI/6);
-                ctx.fillStyle='#546e7a'; ctx.font="bold 16px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(i,0,0);
-                ctx.rotate(i*Math.PI/6); ctx.translate(0,75); ctx.rotate(-i*Math.PI/6);
-            }
-            drawHand((h%12)*Math.PI/6 + m*Math.PI/360, 50, 5, '#333'); 
-            drawHand(m*Math.PI/30, 70, 3, '#e91e63');
-            ctx.beginPath(); ctx.arc(0,0,5,0,2*Math.PI); ctx.fill();
-            ctx.translate(-100,-100);
-        }
-        function drawHand(pos, len, w, color) {
-            ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=w; ctx.lineCap="round";
-            ctx.moveTo(0,0); ctx.rotate(pos); ctx.lineTo(0,-len); ctx.stroke(); ctx.rotate(-pos);
-        }
-
-        function generateL3() {
-            document.getElementById('l3-h').value = ''; 
-            document.getElementById('l3-m').value = '';
-            
-            const mode = Math.random() > 0.5 ? 'analog' : 'duration';
-            const h = Math.floor(Math.random()*12)+1;
-            const m = Math.floor(Math.random()*12)*5;
-            
-            if(mode === 'analog') {
-                document.getElementById('clock-canvas').style.display = 'block';
-                document.getElementById('l3-digital-wrap').style.display = 'none';
-                drawClock(h, m);
-                document.getElementById('l3-text').innerText = "請寫出鐘面上的時間：";
-                l3Ans = {h, m};
-            } else {
-                document.getElementById('clock-canvas').style.display = 'none';
-                document.getElementById('l3-digital-wrap').style.display = 'inline-block';
-                const dur = 30 + Math.floor(Math.random()*6)*10; 
-                document.getElementById('l3-digital-wrap').innerText = `${h}:${m<10?'0'+m:m}`;
-                document.getElementById('l3-text').innerText = `現在如圖，經過 ${dur} 分鐘後是幾點？`;
-                
-                let total = m + dur;
-                l3Ans.h = h + Math.floor(total/60);
-                if(l3Ans.h > 12) l3Ans.h -= 12;
-                l3Ans.m = total % 60;
-            }
-            speakText(document.getElementById('l3-text').innerText);
-        }
-
-        function checkL3() {
-            const uh = parseInt(document.getElementById('l3-h').value);
-            const um = parseInt(document.getElementById('l3-m').value);
-            if(uh === l3Ans.h && um === l3Ans.m) {
-                addScore(100);
-                generateL3();
-            } else feedback("時間不對喔，注意進位");
+        function speak(text) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'zh-HK';
+            window.speechSynthesis.speak(u);
         }
     </script>
 </body>
