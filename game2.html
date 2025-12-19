@@ -33,7 +33,7 @@
         <img src="https://cdn.sanriowiki.com/2/23/Cinnamoroll.png" alt="玉桂狗" class="cinnamon-header">
         <h2>玉桂狗數學拼圖冒險</h2>
         <p>答對數學題，解鎖拼圖！齊20塊有大獎！</p>
-        
+       
         <div style="margin: 20px 0;">
             <button class="category-btn" onclick="selectCategory('mix')">➕➖✖️➗ 混合四則</button>
             <div id="mix-levels" class="hidden" style="margin-top: 10px;">
@@ -42,7 +42,7 @@
                 <button class="category-btn level-btn" style="background:#ef9a9a; box-shadow:0 5px 0 #e57373;" onclick="startGame('mix',3)">Lv.3 進階</button>
             </div>
         </div>
-        
+       
         <div style="margin: 20px 0;">
             <button class="category-btn" onclick="selectCategory('time')">⏰ 時間轉換</button>
             <div id="time-levels" class="hidden" style="margin-top: 10px;">
@@ -52,7 +52,6 @@
             </div>
         </div>
     </div>
-
     <div id="game-screen" class="game-container hidden">
         <div class="score-board">
             <span>難度：<span id="level-display">Lv.?</span></span>
@@ -69,7 +68,6 @@
         <button class="btn-check" onclick="checkAnswer()">提交答案</button>
         <div id="reward-area"></div>
     </div>
-
     <script>
         let score = 0;
         let correctAnswer = 0;
@@ -79,15 +77,15 @@
         let canvas, ctx, img;
         const tileWidth = 80, tileHeight = 80, cols = 5, rows = 4;
         const totalPieces = 20;
-        const puzzleUrl = 'https://4kwallpapers.com/images/wallpapers/cinnamoroll-5k-cute-3840x2160-11712.png'; // 穩定高清圖
-
+        // ✅ 修復：使用穩定的高清玉桂狗圖片（吹泡泡場景，超可愛！）
+        const puzzleUrl = 'https://wallpapers.com/images/hd/cinnamoroll-sanrio-character-kj9funibekfso7sj.jpg';
+        
         function selectCategory(mode) {
             gameMode = mode;
             document.getElementById('mix-levels').classList.add('hidden');
             document.getElementById('time-levels').classList.add('hidden');
             document.getElementById(mode + '-levels').classList.remove('hidden');
         }
-
         function startGame(mode, lvl) {
             gameMode = mode;
             level = lvl;
@@ -103,7 +101,6 @@
             initPuzzle();
             generateQuestion();
         }
-
         function initPuzzle() {
             canvas = document.getElementById('puzzle-canvas');
             ctx = canvas.getContext('2d');
@@ -120,7 +117,6 @@
             };
             img.src = puzzleUrl;
         }
-
         function drawPuzzle() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const sourceWidth = img.naturalWidth || canvas.width;
@@ -149,7 +145,6 @@
                 completePuzzle();
             }
         }
-
         function revealRandomPiece() {
             let available = [];
             for (let i = 0; i < totalPieces; i++) {
@@ -162,7 +157,6 @@
                 sparkleEffect(randomIndex);
             }
         }
-
         function sparkleEffect(index) {
             const x = (index % cols) * tileWidth + tileWidth / 2;
             const y = Math.floor(index / cols) * tileHeight + tileHeight / 2;
@@ -176,7 +170,6 @@
             document.body.appendChild(sparkle);
             setTimeout(() => sparkle.remove(), 1000);
         }
-
         function completePuzzle() {
             document.getElementById('progress').innerHTML = '<span class="complete">🎉 拼圖完成！好勁呀！ 🎉</span>';
             speak('你好勁呀！拼圖齊晒啦！');
@@ -184,18 +177,14 @@
                 setTimeout(() => showReward(), i * 100);
             }
         }
-
-        // 以下 generateQuestion、checkAnswer、showReward、speak 等函數同之前一樣（省略以節省空間，但完整保留）
         function generateQuestion() {
             document.getElementById('correct-display').classList.add('hidden');
             document.getElementById('answer').style.borderColor = 'var(--cinna-pink)';
             let qText = "";
             let n1, n2;
-
             if (gameMode === 'mix') {
                 const ops = ['+', '-', '×', '÷'];
                 const op = ops[Math.floor(Math.random() * ops.length)];
-
                 if (level === 1) {
                     n1 = Math.floor(Math.random() * 10) + 1;
                     n2 = Math.floor(Math.random() * 10) + 1;
@@ -206,7 +195,6 @@
                     n1 = Math.floor(Math.random() * 90) + 10;
                     n2 = Math.floor(Math.random() * 50) + 10;
                 }
-
                 if (op === '+') {
                     correctAnswer = n1 + n2;
                     qText = `${n1} + ${n2}`;
@@ -244,16 +232,13 @@
                 correctAnswer = hours * 60 + mins;
                 qText = `${hours}小時 ${mins}分 = ? 分`;
             }
-
             document.getElementById('question-text').innerText = qText + ' = ?';
             document.getElementById('answer').value = '';
             document.getElementById('answer').focus();
         }
-
         function checkAnswer() {
             const userAns = parseInt(document.getElementById('answer').value);
             if (isNaN(userAns)) return;
-
             if (userAns === correctAnswer) {
                 score += 10;
                 document.getElementById('score').innerText = score;
@@ -271,7 +256,6 @@
                 }, 1500);
             }
         }
-
         function showReward() {
             const rewards = ['🧁', '✨', '🍭', '🍓', '🌟', '💖', '🎉'];
             const r = document.createElement('div');
@@ -281,7 +265,6 @@
             document.getElementById('reward-area').appendChild(r);
             setTimeout(() => r.remove(), 1000);
         }
-
         function speak(text) {
             const u = new SpeechSynthesisUtterance(text);
             u.lang = 'zh-HK';
