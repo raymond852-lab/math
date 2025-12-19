@@ -3,128 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗應用題老師</title>
+    <title>玉桂狗無限應用題</title>
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg); margin: 0; padding: 15px; text-align: center; }
-        
-        .card { background: white; border-radius: 25px; border: 3px solid var(--cinna-blue); padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
-        .problem-text { font-size: 1.3rem; line-height: 1.8; color: #455a64; text-align: left; margin-bottom: 20px; min-height: 100px; }
-        .keyword { color: #f06292; font-weight: bold; text-decoration: underline; }
-        
-        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .opt-btn { background: white; border: 2px solid var(--cinna-blue); padding: 15px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-        .opt-btn:active { background: var(--cinna-blue); color: white; }
-        
-        .answer-box { margin-top: 20px; display: none; }
-        #final-ans { width: 100px; font-size: 1.5rem; border: none; border-bottom: 3px solid var(--cinna-pink); text-align: center; outline: none; }
-        
-        .reward { font-size: 3rem; margin-top: 15px; display: none; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); padding: 15px; text-align: center; }
+        .card { background: white; border-radius: 25px; border: 3px solid var(--cinna-blue); padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .problem-text { font-size: 1.3rem; line-height: 1.8; color: #455a64; text-align: left; margin: 20px 0; min-height: 100px; background: #fffaf0; padding: 15px; border-radius: 15px; }
+        .keyword { color: #f06292; font-weight: bold; border-bottom: 2px dashed #f06292; }
+        .btn { background: white; border: 2px solid var(--cinna-blue); padding: 12px; border-radius: 12px; cursor: pointer; font-size: 1rem; }
+        .btn:active { background: var(--cinna-blue); color: white; }
+        .answer-input { width: 100px; font-size: 1.5rem; border: none; border-bottom: 3px solid var(--cinna-pink); text-align: center; margin: 10px; }
+        .reward { font-size: 4rem; display: none; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div style="font-size: 0.9rem; color: #999; margin-bottom: 10px;">P3 應用題挑戰 🌟</div>
-        <div id="problem-display" class="problem-text">正在載入題目...</div>
-        
-        <button onclick="sayProblem()" style="background:none; border:none; font-size:2rem; cursor:pointer;">🔊</button>
+        <h3 style="color:var(--cinna-blue)">🧁 無限應用題挑戰</h3>
+        <div id="problem-display" class="problem-text">點擊按鈕開始...</div>
         
         <div id="step-1">
-            <p style="color: #0288d1; font-weight: bold;">步驟 1：這題應該用什麼方法計算？</p>
-            <div class="option-grid">
-                <button class="opt-btn" onclick="checkStep1('+')">加法 (+)</button>
-                <button class="opt-btn" onclick="checkStep1('-')">減法 (-)</button>
-                <button class="opt-btn" onclick="checkStep1('x')">乘法 (×)</button>
-                <button class="opt-btn" onclick="checkStep1('÷')">除法 (÷)</button>
+            <p>這題要用什麼方法？</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="btn" onclick="checkStep1('+')">加法 (+)</button>
+                <button class="btn" onclick="checkStep1('-')">減法 (-)</button>
+                <button class="btn" onclick="checkStep1('x')">乘法 (×)</button>
+                <button class="btn" onclick="checkStep1('÷')">除法 (÷)</button>
             </div>
         </div>
 
-        <div id="step-2" class="answer-box">
-            <p style="color: #f06292; font-weight: bold;">步驟 2：最後答案是多少？</p>
-            <input type="number" id="final-ans" placeholder="?">
-            <button class="opt-btn" style="background: var(--cinna-pink); color:white; border:none;" onclick="checkStep2()">檢查答案</button>
+        <div id="step-2" style="display:none; margin-top:20px;">
+            <p>答案是多少？</p>
+            <input type="number" id="user-ans" class="answer-input" inputmode="numeric">
+            <button class="btn" style="background:var(--cinna-pink); color:white; border:none;" onclick="checkStep2()">提交</button>
         </div>
 
-        <div id="reward-icon" class="reward">🧁</div>
-        <button id="next-btn" onclick="nextProblem()" style="display:none; margin-top:20px; background:var(--cinna-blue); color:white; border:none; padding:10px 20px; border-radius:20px;">下一題 🚀</button>
+        <div id="reward" class="reward">✨</div>
+        <button id="next-btn" class="btn" style="display:none; width:100%; margin-top:20px;" onclick="generateProblem()">下一題 🚀</button>
     </div>
 
     <script>
-        const problems = [
-            { 
-                text: "玉桂狗有 12 盒餅乾，每盒有 8 塊，<span class='keyword'>一共有</span>餅乾多少塊？", 
-                op: 'x', 
-                ans: 96,
-                hint: "看到『每盒有』和『一共』，通常是用乘法喔！"
+        let currentProblem = {};
+
+        const templates = [
+            {
+                type: 'x',
+                getText: (n1, n2, item) => `玉桂狗有 ${n1} 盒${item}，每盒有 ${n2} 個，<span class='keyword'>一共有</span>${item}多少個？`,
+                hint: "每盒有相同數量，求總數要用『乘法』喔！"
             },
-            { 
-                text: "老師把 45 粒糖果<span class='keyword'>平均分給</span> 5 位同學，每人可得糖果多少粒？", 
-                op: '÷', 
-                ans: 9,
-                hint: "『平均分配』是除法的關鍵字！"
+            {
+                type: '÷',
+                getText: (n1, n2, item) => `老師有 ${n1 * n2} 粒${item}，<span class='keyword'>平均分給</span> ${n1} 位同學，每人可得${item}多少粒？`,
+                hint: "『平均分配』是『除法』的關鍵信號！"
             },
-            { 
-                text: "書包原價 150 元，現在<span class='keyword'>減價</span> 35 元，現在售價是多少元？", 
-                op: '-', 
-                ans: 115,
-                hint: "『減價』代表數量變少了。"
+            {
+                type: '-',
+                getText: (n1, n2, item) => `商店原有 ${n1+n2} 個${item}，今天<span class='keyword'>賣出了</span> ${n2} 個，還<span class='keyword'>剩下</span>多少個？`,
+                hint: "數量變少了，求剩下的要用『減法』。"
+            },
+            {
+                type: '+',
+                getText: (n1, n2, item) => `小明買了 ${n1} 個${item}，媽媽再送給他 ${n2} 個，他<span class='keyword'>現在共有</span>多少個？`,
+                hint: "數量增加了，求總數用『加法』。"
             }
         ];
 
-        let currentP = 0;
+        const items = ["糖果", "甜甜圈", "貼紙", "巧克力", "文具", "蘋果"];
 
-        function loadProblem() {
-            const p = problems[currentP];
-            document.getElementById('problem-display').innerHTML = p.text;
+        function generateProblem() {
+            const temp = templates[Math.floor(Math.random() * templates.length)];
+            const item = items[Math.floor(Math.random() * items.length)];
+            const n1 = Math.floor(Math.random() * 10) + 2;
+            const n2 = Math.floor(Math.random() * 8) + 2;
+
+            let ans;
+            if (temp.type === 'x') ans = n1 * n2;
+            else if (temp.type === '÷') ans = n2; // n1*n2 / n1
+            else if (temp.type === '-') ans = n1; // (n1+n2) - n2
+            else ans = n1 + n2;
+
+            currentProblem = { text: temp.getText(n1, n2, item), type: temp.type, ans: ans, hint: temp.hint };
+            
+            document.getElementById('problem-display').innerHTML = currentProblem.text;
             document.getElementById('step-1').style.display = 'block';
             document.getElementById('step-2').style.display = 'none';
-            document.getElementById('reward-icon').style.display = 'none';
+            document.getElementById('reward').style.display = 'none';
             document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('final-ans').value = '';
-            sayProblem();
+            document.getElementById('user-ans').value = '';
+            
+            speak(document.getElementById('problem-display').innerText);
         }
 
-        function checkStep1(userOp) {
-            if (userOp === problems[currentP].op) {
-                speak("答對了！選對運算號了。");
+        function checkStep1(op) {
+            if (op === currentProblem.type) {
+                speak("答對了！運算正確。");
                 document.getElementById('step-1').style.display = 'none';
                 document.getElementById('step-2').style.display = 'block';
             } else {
-                speak("再想一想，" + problems[currentP].hint);
+                speak("再想一想，" + currentProblem.hint);
             }
         }
 
         function checkStep2() {
-            const userAns = parseInt(document.getElementById('final-ans').value);
-            if (userAns === problems[currentP].ans) {
-                speak("太棒了！計算正確！");
-                document.getElementById('reward-icon').innerText = ['🧁','🍭','🎀','🌟'][Math.floor(Math.random()*4)];
-                document.getElementById('reward-icon').style.display = 'block';
-                document.getElementById('next-btn').style.display = 'inline-block';
+            if (parseInt(document.getElementById('user-ans').value) === currentProblem.ans) {
+                speak("太棒了！計算正確。");
+                document.getElementById('reward').style.display = 'block';
+                document.getElementById('next-btn').style.display = 'block';
+                document.getElementById('step-2').style.display = 'none';
             } else {
-                speak("計算錯了，再試一次！");
+                speak("算錯了，再試一次！");
             }
-        }
-
-        function nextProblem() {
-            currentP = (currentP + 1) % problems.length;
-            loadProblem();
-        }
-
-        function sayProblem() {
-            const u = new SpeechSynthesisUtterance(problems[currentP].text.replace(/<[^>]*>/g, ''));
-            u.lang = 'zh-HK'; u.rate = 0.8;
-            window.speechSynthesis.speak(u);
         }
 
         function speak(t) {
             const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'zh-HK'; window.speechSynthesis.speak(u);
+            u.lang = 'zh-HK'; u.rate = 0.8;
+            window.speechSynthesis.speak(u);
         }
 
-        window.onload = loadProblem;
+        window.onload = generateProblem;
     </script>
 </body>
 </html>
