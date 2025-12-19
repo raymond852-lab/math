@@ -3,159 +3,419 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗數學 Level Up</title>
+    <title>玉桂狗 P3 全科自主溫習站</title>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --cinna-blue: #b3e5fc; --cinna-pink: #ffc1e3; --bg: #f9feff; }
-        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); padding: 15px; text-align: center; }
-        .card { background: white; border-radius: 25px; border: 3px solid var(--cinna-blue); padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        :root { --cinna-blue: #b3e5fc; --cinna-dark-blue: #0288d1; --cinna-pink: #ffc1e3; --cinna-dark-pink: #f06292; --bg: #f0faff; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg); margin: 0; padding: 0; text-align: center; user-select: none; -webkit-user-select: none; }
         
-        /* 等級選擇器 */
-        .lvl-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .lvl-btn { flex: 1; padding: 10px; border-radius: 15px; border: 2px solid #ddd; background: #fff; cursor: pointer; font-weight: bold; }
-        .lvl-btn.active { border-color: var(--cinna-blue); background: #e1f5fe; color: #0288d1; }
+        /* 通用佈局 */
+        .screen { display: none; padding: 20px; min-height: 100vh; box-sizing: border-box; flex-direction: column; align-items: center; }
+        .screen.active { display: flex; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .problem-text { font-size: 1.2rem; line-height: 1.6; color: #455a64; text-align: left; margin: 15px 0; background: #fffaf0; padding: 15px; border-radius: 15px; min-height: 80px; }
-        .keyword { color: #f06292; font-weight: bold; border-bottom: 2px dashed #f06292; }
+        .card { background: white; border-radius: 25px; border: 3px solid var(--cinna-blue); padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 10px 20px rgba(179,229,252,0.3); margin-bottom: 20px; position: relative; }
         
-        .step-box { background: #f1f8e9; border-radius: 15px; padding: 15px; margin-top: 15px; border-left: 5px solid #8bc34a; text-align: left; }
-        .btn { background: white; border: 2px solid var(--cinna-blue); padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; margin: 2px; }
-        .btn-main { background: var(--cinna-pink); color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 1.2rem; margin-top: 10px; box-shadow: 0 4px 0 #f06292; }
+        h1, h2, h3 { margin: 10px 0; color: #546e7a; }
+        .btn { background: white; border: 2px solid var(--cinna-blue); padding: 15px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; font-weight: bold; color: #555; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn:active { transform: scale(0.98); background: var(--cinna-blue); color: white; }
+        .btn-primary { background: var(--cinna-pink); color: white; border: none; box-shadow: 0 5px 0 var(--cinna-dark-pink); font-size: 1.3rem; }
+        .btn-primary:active { box-shadow: 0 2px 0 var(--cinna-dark-pink); transform: translateY(3px); }
+        .btn-back { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.8); border: 1px solid #ddd; padding: 5px 15px; border-radius: 20px; z-index: 100; font-size: 0.9rem; cursor: pointer; }
+
+        /* 獎勵特效 */
+        .reward-overlay { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; display:none; justify-content:center; align-items:center; }
+        .reward-emoji { font-size: 5rem; animation: popUp 0.8s forwards; }
+        @keyframes popUp { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+
+        /* 中文默書特定樣式 */
+        #writer-canvas { display: block; margin: 0 auto; cursor: crosshair; touch-action: none; }
+        .history-item { background: #f9f9f9; padding: 8px; border-radius: 8px; margin: 5px 0; font-size: 0.8rem; text-align: left; cursor: pointer; border: 1px solid #eee; }
         
-        input { width: 80px; font-size: 1.2rem; border: none; border-bottom: 2px solid var(--cinna-pink); text-align: center; outline: none; }
-        .reward { font-size: 3rem; display: none; margin-top: 10px; }
+        /* 數學特定樣式 */
+        .math-input { width: 80px; font-size: 1.5rem; border: none; border-bottom: 3px solid var(--cinna-pink); text-align: center; outline: none; background: transparent; }
+        .keyword { color: var(--cinna-dark-pink); font-weight: bold; border-bottom: 2px dashed var(--cinna-dark-pink); }
+        #clock-canvas { background: white; border-radius: 50%; border: 6px solid #546e7a; margin: 10px auto; display: block; max-width: 100%; }
+        .digital-clock { background: #333; color: #0f0; font-family: monospace; padding: 5px 15px; border-radius: 8px; font-size: 1.8rem; display: inline-block; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="lvl-selector">
-            <button id="btn-l1" class="lvl-btn active" onclick="setLevel(1)">Level 1<br><small>一步運算</small></button>
-            <button id="btn-l2" class="lvl-btn" onclick="setLevel(2)">Level 2<br><small>兩步運算</small></button>
+    <button id="global-back" class="btn-back" onclick="goHome()" style="display:none;">⬅ 回選單</button>
+
+    <div id="reward-layer" class="reward-overlay"><div id="reward-icon" class="reward-emoji">🌟</div></div>
+
+    <div id="screen-home" class="screen active">
+        <div style="font-size: 4rem; margin-top: 30px;">🐶</div>
+        <h1 style="color:var(--cinna-dark-blue)">P3 自主溫習站</h1>
+        <p style="color:#777; margin-bottom: 30px;">選擇今天要挑戰的科目：</p>
+        
+        <div class="card">
+            <button class="btn" onclick="goTo('dictation-setup')" style="border-color: var(--cinna-dark-pink); color: var(--cinna-dark-pink);">
+                📝 中文默書 <span style="font-size:0.8rem; background:#eee; padding:2px 6px; border-radius:10px;">語音/手寫</span>
+            </button>
+            <button class="btn" onclick="goTo('math-menu')" style="border-color: var(--cinna-dark-blue); color: var(--cinna-dark-blue);">
+                🧮 數學特訓 <span style="font-size:0.8rem; background:#eee; padding:2px 6px; border-radius:10px;">L1 - L3</span>
+            </button>
         </div>
+        <div style="font-size: 0.8rem; color: #aaa; margin-top: auto;">Designed for P3 Students</div>
+    </div>
 
-        <div id="problem-display" class="problem-text">載入中...</div>
-        <button onclick="speakProblem()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🔊 讀題</button>
-
-        <div id="step-logic" style="margin-top:15px;">
-            <p id="logic-title" style="font-weight:bold; color:#546e7a;">這題要怎麼算？</p>
-            <div id="op-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                </div>
-        </div>
-
-        <div id="step-answer" style="display:none; margin-top:15px;">
-            <div class="step-box">
-                <p style="margin:0 0 10px 0;">🌟 <b>計算挑戰：</b></p>
-                <input type="number" id="final-ans" inputmode="numeric"> 元 / 個 / 粒
+    <div id="screen-dictation-setup" class="screen">
+        <h2>中文默書設定</h2>
+        <div class="card">
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button id="mode-ipad" class="btn" style="background:var(--cinna-blue); color:white;" onclick="setDicMode('ipad')">📱 iPad 逐字</button>
+                <button id="mode-paper" class="btn" onclick="setDicMode('paper')">📄 紙筆整句</button>
             </div>
-            <button class="btn-main" onclick="checkFinal()">提交答案</button>
+            
+            <input type="text" id="dic-input" placeholder="輸入或讀出課文..." style="width:100%; font-size:1.2rem; padding:10px; border:2px solid #ddd; border-radius:10px; margin-bottom:10px;">
+            <button class="btn" onclick="startVoiceInput()" style="background:#e3f2fd; color:#1565c0;">🎤 語音錄入</button>
+            
+            <div id="dic-history" style="max-height:100px; overflow-y:auto; margin:10px 0;"></div>
+            
+            <button class="btn-primary" onclick="startDictation()">🚀 開始默書</button>
         </div>
+    </div>
 
-        <div id="reward" class="reward">🍭</div>
-        <button id="next-btn" class="btn-main" style="display:none; background:#81c784; box-shadow:0 4px 0 #66bb6a;" onclick="generateProblem()">下一題 🚀</button>
+    <div id="screen-dictation-run" class="screen">
+        <div class="card">
+            <div id="dic-progress" style="font-size:0.9rem; color:#999; margin-bottom:10px;"></div>
+            <div id="dic-text-display" style="font-size:1.5rem; color:var(--cinna-dark-blue); font-weight:bold; min-height:40px;"></div>
+            
+            <div id="dic-canvas-area">
+                <div style="border: 2px dashed #ddd; border-radius: 15px; margin: 10px auto; width: 280px; height: 280px; position:relative;">
+                    <div id="writer-canvas"></div>
+                </div>
+                <button class="btn" onclick="dicHint()" style="background:#fff9c4; color:#fbc02d; border:none;">💡 救命草</button>
+            </div>
+
+            <div id="dic-paper-area" style="display:none;">
+                <p style="color:#666;">請在紙上默寫，完成後按下一步。</p>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn" onclick="dicSpeak()" style="flex:1;">🔊 重讀</button>
+                <button id="dic-next-btn" class="btn-primary" onclick="dicNext()" style="flex:2; display:none;">下一段 ➡</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-math-menu" class="screen">
+        <h2>數學大冒險</h2>
+        <div class="card">
+            <button class="btn" onclick="initMathL1()">
+                ⚡ Level 1：速算特訓 <br><small style="color:#999">加減乘除混合</small>
+            </button>
+            <button class="btn" onclick="initMathL2()">
+                🧠 Level 2：應用題邏輯 <br><small style="color:#999">拆解題目關鍵字</small>
+            </button>
+            <button class="btn" onclick="initMathL3()">
+                ⏰ Level 3：時間大師 <br><small style="color:#999">模擬鐘與跨時計算</small>
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-math-l1" class="screen">
+        <div class="card">
+            <span style="background:#ffecb3; padding:5px 10px; border-radius:15px; font-size:0.8rem;">Level 1 速算</span>
+            <div id="m1-q" style="font-size:3rem; color:#555; margin:20px 0;"></div>
+            <input type="number" id="m1-ans" class="math-input" style="width:120px;" placeholder="?">
+            <button class="btn-primary" onclick="checkMathL1()" style="margin-top:20px;">提交</button>
+            <div id="m1-msg" style="height:20px; color:red; margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <div id="screen-math-l2" class="screen">
+        <div class="card">
+            <span style="background:#c8e6c9; padding:5px 10px; border-radius:15px; font-size:0.8rem;">Level 2 應用題</span>
+            <div id="m2-text" style="text-align:left; line-height:1.6; font-size:1.1rem; margin:15px 0; background:#f5f5f5; padding:10px; border-radius:10px;"></div>
+            <button onclick="speakText(document.getElementById('m2-text').innerText)" style="background:none; border:none; cursor:pointer;">🔊 讀題</button>
+            
+            <div id="m2-step1">
+                <p style="color:var(--cinna-dark-blue); font-weight:bold;">這題要怎麼算？</p>
+                <div id="m2-ops" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+            </div>
+
+            <div id="m2-step2" style="display:none; margin-top:15px;">
+                <p style="color:var(--cinna-dark-pink); font-weight:bold;">答案是多少？</p>
+                <input type="number" id="m2-ans" class="math-input">
+                <button class="btn-primary" onclick="checkMathL2Final()" style="margin-top:10px;">檢查</button>
+            </div>
+            <button id="m2-next" class="btn" style="display:none; margin-top:15px; background:#81c784; color:white;" onclick="initMathL2()">下一題</button>
+        </div>
+    </div>
+
+    <div id="screen-math-l3" class="screen">
+        <div class="card">
+            <span style="background:#e1bee7; padding:5px 10px; border-radius:15px; font-size:0.8rem;">Level 3 時間</span>
+            <canvas id="clock-canvas" width="200" height="200" style="display:none;"></canvas>
+            <div id="digital-clock-wrap" style="display:none;"><div id="m3-d-clock" class="digital-clock">00:00</div></div>
+            
+            <div id="m3-text" style="margin:15px 0; text-align:left;"></div>
+            <button onclick="speakText(document.getElementById('m3-text').innerText)" style="background:none; border:none;">🔊</button>
+
+            <div style="margin-top:20px;">
+                <input type="number" id="m3-h" class="math-input" placeholder="時"> : 
+                <input type="number" id="m3-m" class="math-input" placeholder="分">
+            </div>
+            <button class="btn-primary" onclick="checkMathL3()" style="margin-top:15px;">提交</button>
+            <button id="m3-next" class="btn" style="display:none; margin-top:15px; background:#81c784; color:white;" onclick="initMathL3()">下一題</button>
+        </div>
     </div>
 
     <script>
-        let currentLevel = 1;
-        let currentProblem = {};
-        const items = ["糖果", "貼紙", "巧克力", "蘋果", "文具", "小蛋糕"];
-
-        function setLevel(l) {
-            currentLevel = l;
-            document.getElementById('btn-l1').className = 'lvl-btn' + (l==1?' active':'');
-            document.getElementById('btn-l2').className = 'lvl-btn' + (l==2?' active':'');
-            generateProblem();
+        // --- 通用功能 ---
+        function goTo(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + screenId).classList.add('active');
+            document.getElementById('global-back').style.display = (screenId === 'home') ? 'none' : 'block';
+            stopVoice();
         }
 
-        const templatesL1 = [
-            { type: 'x', get: (n1, n2, i) => [`玉桂狗買了 ${n1} 盒${i}，每盒有 ${n2} 粒，<span class='keyword'>一共有</span>多少粒？`, n1*n2, "『每盒有』配『一共』要用乘法。"] },
-            { type: '÷', get: (n1, n2, i) => [`老師有 ${n1*n2} 粒${i}，<span class='keyword'>平均分給</span> ${n1} 人，每人有幾粒？`, n2, "『平均分』要用除法。"] }
-        ];
+        function goHome() { goTo('home'); }
 
-        const templatesL2 = [
-            { // (A + B) / C
-                type: '(+)/', 
-                get: (n1, n2, i) => {
-                    let total = (n1 + n2) * 5; // 確保能被 5 整除
-                    return [`玉桂狗有 ${n1*5} 粒紅${i}和 ${n2*5} 粒黃${i}，他把全部${i}<span class='keyword'>平均分給</span> 5 位朋友，每人得幾粒？`, (n1*5+n2*5)/5, "先加起總數，再除以人數。"];
-                }
-            },
-            { // A - (B * C)
-                type: '-(x)',
-                get: (n1, n2, i) => {
-                    let price = 8;
-                    let pay = 100;
-                    return [`媽媽給了玉桂狗 $${pay}，他買了 ${n1} 個每個 $${price} 的${i}，應<span class='keyword'>找回</span>多少錢？`, pay - (n1*price), "先算出總花費 (乘法)，再用減法算找贖。"];
-                }
-            }
-        ];
-
-        function generateProblem() {
-            const list = (currentLevel === 1) ? templatesL1 : templatesL2;
-            const temp = list[Math.floor(Math.random() * list.length)];
-            const i = items[Math.floor(Math.random() * items.length)];
-            const n1 = Math.floor(Math.random() * 8) + 2;
-            const n2 = Math.floor(Math.random() * 5) + 2;
-            
-            const [text, ans, hint] = temp.get(n1, n2, i);
-            currentProblem = { text, ans, hint, type: temp.type };
-
-            document.getElementById('problem-display').innerHTML = text;
-            document.getElementById('step-logic').style.display = 'block';
-            document.getElementById('step-answer').style.display = 'none';
-            document.getElementById('reward').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('final-ans').value = '';
-            
-            setupLogicButtons();
-            speakProblem();
+        function showReward() {
+            const emojis = ['🏆', '🧁', '🍭', '✨', '🎉', '🍎'];
+            const el = document.getElementById('reward-icon');
+            const layer = document.getElementById('reward-layer');
+            el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            layer.style.display = 'flex';
+            playSound('correct');
+            setTimeout(() => { layer.style.display = 'none'; }, 800);
         }
 
-        function setupLogicButtons() {
-            const container = document.getElementById('op-container');
+        function speakText(text) {
+            stopVoice();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'zh-HK'; u.rate = 0.8;
+            window.speechSynthesis.speak(u);
+        }
+
+        function stopVoice() { window.speechSynthesis.cancel(); }
+
+        function playSound(type) {
+            // 簡單音效邏輯，此處主要依賴語音
+            if(type === 'correct') speakText("答對了！");
+            else if(type === 'wrong') speakText("再試一次");
+        }
+
+        // --- 1. 中文默書邏輯 ---
+        let dicMode = 'ipad';
+        let dicSegments = [];
+        let dicIdx = 0;
+        let writer = null;
+
+        function setDicMode(m) {
+            dicMode = m;
+            document.getElementById('mode-ipad').style.background = m==='ipad'? 'var(--cinna-blue)' : 'white';
+            document.getElementById('mode-ipad').style.color = m==='ipad'? 'white' : '#555';
+            document.getElementById('mode-paper').style.background = m==='paper'? 'var(--cinna-blue)' : 'white';
+            document.getElementById('mode-paper').style.color = m==='paper'? 'white' : '#555';
+        }
+
+        // 語音輸入
+        function startVoiceInput() {
+            const Speech = window.webkitSpeechRecognition || window.SpeechRecognition;
+            if (!Speech) { alert("此瀏覽器不支援語音錄入，請手動輸入。"); return; }
+            const rec = new Speech(); rec.lang = 'zh-HK';
+            rec.start();
+            rec.onresult = (e) => { document.getElementById('dic-input').value = e.results[0][0].transcript; };
+        }
+
+        // 歷史紀錄
+        function renderHistory() {
+            const h = JSON.parse(localStorage.getItem('dicHistory') || '[]');
+            const container = document.getElementById('dic-history');
             container.innerHTML = '';
-            const ops = (currentLevel === 1) ? ['+', '-', 'x', '÷'] : ['先加後除', '先乘後減', '先減後乘', '連乘法'];
-            const correctMap = { 'x':'x', '÷':'÷', '(+)/':'先加後除', '-(x)':'先乘後減' };
-
-            ops.forEach(op => {
-                const b = document.createElement('button');
-                b.className = 'btn';
-                b.innerText = op;
-                b.onclick = () => {
-                    if(op === correctMap[currentProblem.type]) {
-                        speak("正確！開始計算吧。");
-                        document.getElementById('step-logic').style.display = 'none';
-                        document.getElementById('step-answer').style.display = 'block';
-                    } else {
-                        speak("不對喔，" + currentProblem.hint);
-                    }
-                };
-                container.appendChild(b);
+            h.forEach(txt => {
+                let d = document.createElement('div');
+                d.className = 'history-item';
+                d.innerText = txt.substring(0, 15) + '...';
+                d.onclick = () => document.getElementById('dic-input').value = txt;
+                container.appendChild(d);
             });
         }
+        renderHistory();
 
-        function checkFinal() {
-            const val = parseInt(document.getElementById('final-ans').value);
-            if(val === currentProblem.ans) {
-                speak("太聰明了！算對了！");
-                document.getElementById('reward').style.display = 'block';
-                document.getElementById('next-btn').style.display = 'block';
-                document.getElementById('step-answer').style.display = 'none';
+        function startDictation() {
+            const txt = document.getElementById('dic-input').value.trim();
+            if(!txt) return alert("請輸入課文");
+            
+            // 存紀錄
+            let h = JSON.parse(localStorage.getItem('dicHistory') || '[]');
+            if(!h.includes(txt)) { h.unshift(txt); localStorage.setItem('dicHistory', JSON.stringify(h.slice(0,5))); renderHistory(); }
+
+            if(dicMode === 'paper') dicSegments = txt.split(/([，。！？、；\s]+)/).filter(s => s.trim().length > 0);
+            else dicSegments = txt.split('').filter(s => s.trim().length > 0 && !/[，。！？]/.test(s)); // iPad 模式只取漢字
+
+            dicIdx = 0;
+            goTo('dictation-run');
+            runDicStep();
+        }
+
+        function runDicStep() {
+            if(dicIdx >= dicSegments.length) {
+                alert("默書完成！"); goTo('dictation-setup'); return;
+            }
+            const seg = dicSegments[dicIdx];
+            document.getElementById('dic-progress').innerText = `${dicIdx+1} / ${dicSegments.length}`;
+            
+            if(dicMode === 'ipad') {
+                document.getElementById('dic-canvas-area').style.display = 'block';
+                document.getElementById('dic-paper-area').style.display = 'none';
+                document.getElementById('dic-text-display').innerText = ""; // 隱藏文字
+                document.getElementById('dic-next-btn').style.display = 'none';
+                
+                document.getElementById('writer-canvas').innerHTML = '';
+                writer = HanziWriter.create('writer-canvas', seg, {
+                    width: 280, height: 280, padding: 10, showOutline: false, showCharacter: false, strokeColor: '#0288d1', drawingWidth: 40
+                });
+                writer.quiz({ onComplete: () => { showReward(); setTimeout(dicNext, 800); } });
             } else {
-                speak("計算錯了，再檢查一下。");
+                document.getElementById('dic-canvas-area').style.display = 'none';
+                document.getElementById('dic-paper-area').style.display = 'block';
+                document.getElementById('dic-text-display').innerText = "請默寫..."; 
+                document.getElementById('dic-next-btn').style.display = 'block';
+            }
+            dicSpeak();
+        }
+
+        function dicSpeak() { speakText(dicSegments[dicIdx]); }
+        function dicHint() { if(writer) writer.showOutline({ duration: 2000 }); }
+        function dicNext() { dicIdx++; runDicStep(); }
+
+        // --- 2. 數學 Level 1 (速算) ---
+        let m1Ans = 0;
+        function initMathL1() {
+            goTo('math-l1');
+            const n1 = Math.floor(Math.random() * 12) + 1;
+            const n2 = Math.floor(Math.random() * 9) + 1;
+            const isMult = Math.random() > 0.5;
+            m1Ans = isMult ? n1 * n2 : n1 + n2;
+            document.getElementById('m1-q').innerText = isMult ? `${n1} × ${n2}` : `${n1} + ${n2}`;
+            document.getElementById('m1-ans').value = '';
+            document.getElementById('m1-msg').innerText = '';
+        }
+        function checkMathL1() {
+            if(parseInt(document.getElementById('m1-ans').value) === m1Ans) {
+                showReward(); setTimeout(initMathL1, 1000);
+            } else {
+                document.getElementById('m1-msg').innerText = "再試一次！";
             }
         }
 
-        function speakProblem() {
-            const u = new SpeechSynthesisUtterance(document.getElementById('problem-display').innerText.replace(/<[^>]*>/g, ''));
-            u.lang = 'zh-HK'; u.rate = 0.8; window.speechSynthesis.speak(u);
+        // --- 3. 數學 Level 2 (應用題) ---
+        let m2Current = {};
+        const m2Templates = [
+            { t: 'x', get: (n1,n2,i) => ({ txt: `每盒有 ${n1} 個${i}，買了 ${n2} 盒，<span class='keyword'>共有</span>多少個？`, ans: n1*n2, hint: "每盒一樣多，求總數用乘法" }) },
+            { t: '÷', get: (n1,n2,i) => ({ txt: `有 ${n1*n2} 個${i}，<span class='keyword'>平均分給</span> ${n2} 人，每人有幾個？`, ans: n1, hint: "平均分配用除法" }) },
+            { t: '-', get: (n1,n2,i) => ({ txt: `有 ${n1+n2} 元，買${i}用了 ${n1} 元，<span class='keyword'>找回</span>多少元？`, ans: n2, hint: "找回就是剩下的，用減法" }) }
+        ];
+        function initMathL2() {
+            goTo('math-l2');
+            const temp = m2Templates[Math.floor(Math.random()*m2Templates.length)];
+            const item = ['糖果','貼紙','蘋果','氣球'][Math.floor(Math.random()*4)];
+            const n1 = Math.floor(Math.random()*8)+2;
+            const n2 = Math.floor(Math.random()*5)+2;
+            m2Current = { ...temp.get(n1,n2,item), type: temp.t };
+            
+            document.getElementById('m2-text').innerHTML = m2Current.txt;
+            document.getElementById('m2-step1').style.display = 'block';
+            document.getElementById('m2-step2').style.display = 'none';
+            document.getElementById('m2-next').style.display = 'none';
+            
+            // 生成符號按鈕
+            const opsDiv = document.getElementById('m2-ops');
+            opsDiv.innerHTML = '';
+            ['+','-','x','÷'].forEach(op => {
+                let btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.innerText = op;
+                btn.onclick = () => {
+                    if(op === m2Current.type) {
+                        speakText("觀念正確！");
+                        document.getElementById('m2-step1').style.display = 'none';
+                        document.getElementById('m2-step2').style.display = 'block';
+                    } else speakText("不對喔，" + m2Current.hint);
+                }
+                opsDiv.appendChild(btn);
+            });
+            speakText(document.getElementById('m2-text').innerText);
+        }
+        function checkMathL2Final() {
+            if(parseInt(document.getElementById('m2-ans').value) === m2Current.ans) {
+                showReward();
+                document.getElementById('m2-next').style.display = 'block';
+            } else speakText("算錯了再試試");
         }
 
-        function speak(t) {
-            const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'zh-HK'; window.speechSynthesis.speak(u);
+        // --- 4. 數學 Level 3 (時間) ---
+        let m3Ans = {h:0, m:0};
+        const clockCanvas = document.getElementById('clock-canvas');
+        const ctx = clockCanvas.getContext('2d');
+
+        function drawClock(h, m) {
+            ctx.clearRect(0,0,200,200);
+            ctx.translate(100,100);
+            
+            // 錶盤
+            ctx.beginPath(); ctx.arc(0,0,90,0,2*Math.PI); ctx.stroke();
+            for(let i=1; i<=12; i++) {
+                ctx.rotate(i * Math.PI/6); ctx.translate(0, -75); ctx.rotate(-i * Math.PI/6);
+                ctx.fillText(i, -3, 3);
+                ctx.rotate(i * Math.PI/6); ctx.translate(0, 75); ctx.rotate(-i * Math.PI/6);
+            }
+            // 指針
+            drawHand((h%12)*Math.PI/6 + m*Math.PI/360, 50, 4, '#333'); // 時
+            drawHand(m*Math.PI/30, 70, 2, 'red'); // 分
+            ctx.translate(-100,-100);
+        }
+        function drawHand(pos, len, width, color) {
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = width;
+            ctx.moveTo(0,0); ctx.rotate(pos); ctx.lineTo(0, -len); ctx.stroke(); ctx.rotate(-pos);
         }
 
-        window.onload = generateProblem;
+        function initMathL3() {
+            goTo('math-l3');
+            document.getElementById('m3-h').value = ''; document.getElementById('m3-m').value = '';
+            document.getElementById('m3-next').style.display = 'none';
+
+            const mode = Math.random() > 0.5 ? 'analog' : 'duration';
+            const h = Math.floor(Math.random()*12)+1;
+            const m = Math.floor(Math.random()*12)*5;
+            
+            if(mode === 'analog') {
+                clockCanvas.style.display = 'block';
+                document.getElementById('digital-clock-wrap').style.display = 'none';
+                drawClock(h, m);
+                document.getElementById('m3-text').innerText = "請寫出鐘面上的時間：";
+                m3Ans = {h, m};
+            } else {
+                // 經過時間
+                clockCanvas.style.display = 'none';
+                document.getElementById('digital-clock-wrap').style.display = 'block';
+                const dur = 30 + Math.floor(Math.random()*6)*10; // 30-80 mins
+                document.getElementById('m3-d-clock').innerText = `${h}:${m<10?'0'+m:m}`;
+                document.getElementById('m3-text').innerText = `現在時間如圖，經過 ${dur} 分鐘後是幾點？`;
+                
+                let totalM = m + dur;
+                m3Ans.h = (h + Math.floor(totalM/60));
+                if(m3Ans.h > 12) m3Ans.h -= 12;
+                m3Ans.m = totalM % 60;
+            }
+            speakText(document.getElementById('m3-text').innerText);
+        }
+        function checkMathL3() {
+            const uh = parseInt(document.getElementById('m3-h').value);
+            const um = parseInt(document.getElementById('m3-m').value);
+            if(uh === m3Ans.h && um === m3Ans.m) {
+                showReward();
+                document.getElementById('m3-next').style.display = 'block';
+            } else speakText("時間不對喔，注意進位或看清楚指針");
+        }
+
     </script>
 </body>
 </html>
