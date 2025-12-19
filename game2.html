@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗 P3 數學特訓 (書面語版)</title>
+    <title>玉桂狗 P3 數學特訓 (進階版)</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-dark: #0288d1; --cinna-pink: #ffc1e3; --bg: #f0f8ff; }
@@ -39,7 +39,7 @@
         .shake { animation: shake 0.5s; }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
 
-        .question { font-size: 1.4rem; color: #37474f; margin: 10px 0; font-weight: bold; min-height: 80px; display: flex; align-items: center; justify-content: center; line-height: 1.5; flex-direction: column; }
+        .question { font-size: 1.3rem; color: #37474f; margin: 10px 0; font-weight: bold; min-height: 90px; display: flex; align-items: center; justify-content: center; line-height: 1.5; flex-direction: column; }
         
         .input-wrapper { margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .answer-input { width: 140px; font-size: 2.2rem; border: none; border-bottom: 4px solid var(--cinna-pink); text-align: center; outline: none; background: transparent; color: #333; font-family: 'Fredoka One'; padding: 5px; border-radius: 0; }
@@ -70,16 +70,16 @@
 
     <div id="start-screen" class="game-container" style="margin-top: 30px;">
         <div class="avatar-box">☁️🐶</div>
-        <h2>玉桂狗 P3 數學特訓</h2>
-        <p style="color:#607d8b; font-size: 0.95rem;">20 分鐘限時挑戰！<br>回答正確收集 Emoji 寶藏！</p>
+        <h2>玉桂狗 P3 數學特訓 (進階版)</h2>
+        <p style="color:#607d8b; font-size: 0.95rem;">挑戰香港小三程度！<br>細心閱讀題目，加油！</p>
         
         <div style="margin: 20px 0;">
-            <button class="category-btn" onclick="toggleMenu('mix')">➕➖✖️➗ 混合四則</button>
+            <button class="category-btn" onclick="toggleMenu('mix')">➕➖✖️➗ 混合計算</button>
             <div id="mix-levels" class="hidden">
-                <button class="category-btn level-btn" onclick="startGame('mix',1)">Lv.1 基礎計算</button>
-                <button class="category-btn level-btn" onclick="startGame('mix',2)">Lv.2 文字應用題</button>
+                <button class="category-btn level-btn" onclick="startGame('mix',1)">Lv.1 基礎運算</button>
+                <button class="category-btn level-btn" onclick="startGame('mix',2)">Lv.2 文字應用題 (進階)</button>
                 <button class="category-btn level-btn" onclick="startGame('mix',3)">Lv.3 括號挑戰</button>
-                <button class="category-btn level-btn" style="background:#ff7043; box-shadow:0 4px 0 #f4511e; color:white;" onclick="startGame('mix',4)">Lv.4 超難綜合</button>
+                <button class="category-btn level-btn" style="background:#ff7043; box-shadow:0 4px 0 #f4511e; color:white;" onclick="startGame('mix',4)">Lv.4 邏輯大挑戰</button>
             </div>
         </div>
         
@@ -87,7 +87,7 @@
             <button class="category-btn" onclick="toggleMenu('time')">⏰ 時間大師</button>
             <div id="time-levels" class="hidden">
                 <button class="category-btn level-btn" onclick="startGame('time',1)">Lv.1 鐘面讀數</button>
-                <button class="category-btn level-btn" onclick="startGame('time',2)">Lv.2 時間經過</button>
+                <button class="category-btn level-btn" onclick="startGame('time',2)">Lv.2 時間經過 (進階)</button>
                 <button class="category-btn level-btn" onclick="startGame('time',3)">Lv.3 24小時制</button>
                 <button class="category-btn level-btn" style="background:#ff7043; box-shadow:0 4px 0 #f4511e; color:white;" onclick="startGame('time',4)">Lv.4 時間應用題</button>
             </div>
@@ -293,6 +293,7 @@
             ctx.moveTo(0,0); ctx.lineTo(Math.cos(rad)*len, Math.sin(rad)*len); ctx.stroke();
         }
         
+        // --- 核心題目邏輯 (調整難度) ---
         function generateQuestion() {
             document.getElementById('submit-btn').disabled = false;
             document.getElementById('answer-math').value = '';
@@ -309,185 +310,161 @@
             
             if (gameMode === 'mix') {
                 if (level === 1) {
+                    // Lv 1: 基礎 - 增加乘法位數
                     const ops = ['+', '-', '×'];
                     const op = ops[Math.floor(Math.random()*3)];
-                    let a = Math.floor(Math.random()*20)+5;
-                    let b = Math.floor(Math.random()*10)+2;
-                    if(op==='-') { if(a<b) [a,b]=[b,a]; correctMath=a-b; }
-                    else if(op==='×') { a=Math.floor(Math.random()*9)+2; b=Math.floor(Math.random()*9)+2; correctMath=a*b; }
-                    else correctMath=a+b;
-                    qHtml = `${a} ${op} ${b} = ? <br><small>（單位是「個」或「元」）</small>`;
+                    if(op==='-') { 
+                        let a = Math.floor(Math.random()*80)+20; let b = Math.floor(Math.random()*15)+5;
+                        correctMath=a-b; qHtml = `${a} - ${b} = ?`;
+                    }
+                    else if(op==='×') { 
+                        let a=Math.floor(Math.random()*12)+2; let b=Math.floor(Math.random()*8)+2; 
+                        correctMath=a*b; qHtml = `${a} × ${b} = ?`;
+                    }
+                    else {
+                        let a = Math.floor(Math.random()*50)+20; let b = Math.floor(Math.random()*30)+10;
+                        correctMath=a+b; qHtml = `${a} + ${b} = ?`;
+                    }
                 }
                 else if (level === 2) {
+                    // Lv 2: 文字題 (進階到 3位數加減 及 簡單兩步)
                     const type = Math.floor(Math.random()*5);
                     let n1, n2, n3, ans;
                     if(type === 0) {
-                        n1 = Math.floor(Math.random()*30)+20; n2 = Math.floor(Math.random()*10)+5; n3 = Math.floor(Math.random()*5)+2;
-                        // Spoken: 送咗, 吃了, 仲剩 -> Written: 送了, 吃了, 還剩
-                        qHtml = `玉桂狗有 ${n1} 顆糖，送了 ${n2} 顆給朋友，<br>又吃了 ${n3} 顆，<br>還剩多少顆？`;
-                        ans = n1 - n2 - n3;
-                    } else if(type === 1) {
-                        n1 = Math.floor(Math.random()*6)+3; n2 = Math.floor(Math.random()*4)+2; n3 = Math.floor(Math.random()*5)+2;
-                        // Spoken: 買咗, 幾多錢 -> Written: 買了, 多少元
-                        qHtml = `一盒有 ${n1} 枝筆，買了 ${n2} 盒，<br>每枝賣 ${n3} 元，總共可以賣多少元？`;
-                        ans = n1 * n2 * n3;
-                    } else if(type === 2) {
-                        n1 = Math.floor(Math.random()*40)+20; n2 = Math.floor(Math.random()*15)+5; n3 = Math.floor(Math.random()*10)+3;
-                        // Spoken: 用咗, 畀咗, 而家, 幾多 -> Written: 用了, 給了, 現在, 多少
-                        qHtml = `小明有 ${n1} 張卡紙，用了 ${n2} 張做手工，<br>媽媽又給了他 ${n3} 張，<br>現在有多少張？`;
+                        n1 = Math.floor(Math.random()*200)+100; n2 = Math.floor(Math.random()*50)+20; n3 = Math.floor(Math.random()*40)+10;
+                        qHtml = `圖書館有 ${n1} 本書，借出了 ${n2} 本，<br>還入 ${n3} 本，<br>現在圖書館有多少本書？`;
                         ans = n1 - n2 + n3;
+                    } else if(type === 1) {
+                        n1 = Math.floor(Math.random()*10)+5; n2 = Math.floor(Math.random()*5)+2; n3 = Math.floor(Math.random()*20)+10;
+                        qHtml = `文具店有 ${n1} 盒鉛筆，每盒 ${n2} 枝，<br>賣出 ${n3} 枝後，<br>還剩多少枝？`;
+                        ans = (n1 * n2) - n3;
+                    } else if(type === 2) {
+                        n1 = Math.floor(Math.random()*300)+200; n2 = Math.floor(Math.random()*150)+50;
+                        qHtml = `哥哥有 ${n1} 元，比弟弟多 ${n2} 元。<br>請問弟弟有多少元？`;
+                        ans = n1 - n2;
                     } else if(type === 3) {
-                        n1 = Math.floor(Math.random()*8)+3; n2 = Math.floor(Math.random()*6)+4; n3 = n1 * n2;
-                        // Spoken: 畀 -> Written: 給
-                        qHtml = `有 ${n3} 粒糖果，要平均分給 ${n2} 個小朋友，<br>每人可以分到多少粒？`;
-                        ans = n1;
+                        n1 = Math.floor(Math.random()*6)+2; n2 = Math.floor(Math.random()*10)+5; n3 = Math.floor(Math.random()*10)+2;
+                        qHtml = `橙每公斤 ${n1} 元，蘋果每公斤 ${n2} 元。<br>媽媽各買了 1 公斤，<br>付款 ${n3 + n1 + n2} 元，應找回多少元？`;
+                        ans = n3;
                     } else {
-                        n1 = Math.floor(Math.random()*5)+2; n2 = Math.floor(Math.random()*20)+10; n3 = Math.floor(Math.random()*30)+10;
-                        // Spoken: 打工, 畀, 幾多 -> Written: 工作, 給, 多少
-                        qHtml = `工作 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外給 ${n3} 元獎金，<br>總共賺了多少元？`;
-                        ans = n1 * n2 + n3;
+                        n1 = Math.floor(Math.random()*20)+10; n2 = Math.floor(Math.random()*5)+2;
+                        qHtml = `一包糖果有 ${n1} 粒，老師買了 ${n2} 包，<br>總共有多少粒糖果？`;
+                        ans = n1 * n2;
                     }
-                    qHtml += `<br><small>（提示：可以用紙筆一步一步算）</small>`;
+                    qHtml += `<br><small>（請小心計算）</small>`;
                     correctMath = ans;
                 }
                 else if (level === 3) {
-                    let a = Math.floor(Math.random()*10)+5;
-                    let b = Math.floor(Math.random()*8)+2;
-                    let c = Math.floor(Math.random()*6)+2;
+                    // Lv 3: 括號挑戰 (數字加大)
+                    let a = Math.floor(Math.random()*40)+10;
+                    let b = Math.floor(Math.random()*20)+5;
+                    let c = Math.floor(Math.random()*5)+2;
                     let op1 = Math.random() > 0.5 ? '+' : '-';
                     qHtml = `(${a} ${op1} ${b}) × ${c} = ?`;
                     correctMath = op1 === '+' ? (a + b) * c : (a - b) * c;
                 }
                 else if (level === 4) {
-                    const type = Math.floor(Math.random() * 5);
-                    let n1, n2, n3, n4, ans;
+                    // Lv 4: 綜合難題 (多步思考)
+                    const type = Math.floor(Math.random() * 4);
                     if (type === 0) {
-                        n1 = Math.floor(Math.random()*50)+30; n2 = Math.floor(Math.random()*10)+5; n3 = Math.floor(Math.random()*8)+3;
-                        // Spoken: 剪咗, 畀, 仲剩 -> Written: 剪了, 給, 還剩
-                        qHtml = `一條繩長 ${n1} 厘米，剪了 ${n2} 厘米給小狗，<br>再剪 ${n3} 厘米給玉桂狗，<br>還剩多少厘米？`;
-                        ans = n1 - n2 - n3;
+                        let total = Math.floor(Math.random()*800)+100; 
+                        let p1 = Math.floor(Math.random()*200)+50;
+                        let p2 = Math.floor(Math.random()*200)+50;
+                        qHtml = `爸爸有 ${total} 元，買禮物用了 ${p1} 元，<br>買蛋糕用了 ${p2} 元，<br>還剩多少元？`;
+                        correctMath = total - p1 - p2;
                     } else if (type === 1) {
-                        let people = Math.floor(Math.random()*4)+2; let perPerson = Math.floor(Math.random()*6)+2; n3 = people * perPerson;
-                        // Spoken: 畀 -> Written: 給
-                        qHtml = `有一袋糖共 ${n3} 粒，<br>平均分給 ${people} 個小朋友，<br>每人有多少粒？`;
-                        ans = perPerson;
+                        let perBag = Math.floor(Math.random()*8)+4;
+                        let bags = Math.floor(Math.random()*6)+3;
+                        let loose = Math.floor(Math.random()*5)+1;
+                        qHtml = `有 ${bags} 袋曲奇，每袋 ${perBag} 塊，<br>另外還有 ${loose} 塊，<br>一共有多少塊曲奇？`;
+                        correctMath = (bags * perBag) + loose;
                     } else if (type === 2) {
-                        let chicken = Math.floor(Math.random()*5)+1; let rabbit = Math.floor(Math.random()*5)+1;
-                        let heads = chicken + rabbit; let legs = (chicken * 2) + (rabbit * 4);
-                        // Spoken: 同, 幾多 -> Written: 和, 多少
-                        qHtml = `農場有雞和兔，數頭有 ${heads} 隻，<br>數腳有 ${legs} 隻。<br>請問有多少隻雞？`;
-                        ans = chicken;
-                    } else if (type === 3) {
-                        n1 = Math.floor(Math.random()*4)+2; n2 = Math.floor(Math.random()*30)+20; n3 = Math.floor(Math.random()*50)+10;
-                        qHtml = `工作 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外給 ${n3} 元獎金，<br>總共賺了多少元？`;
-                        ans = n1 * n2 + n3;
+                        let base = Math.floor(Math.random()*20)+10;
+                        let diff = Math.floor(Math.random()*10)+5;
+                        qHtml = `小明有 ${base} 張貼紙，小紅比小明多 ${diff} 張。<br>兩人共有貼紙多少張？`;
+                        correctMath = base + (base + diff);
                     } else {
-                        n1 = Math.floor(Math.random()*10)+5; n2 = Math.floor(Math.random()*20)+10; n3 = Math.floor(Math.random()*5)+2;
-                        // Spoken: 仲有, 幾多 -> Written: 還有, 多少
-                        qHtml = `玉桂狗吃了 ${n2} 顆糖後還有 ${n3} 顆，<br>原本有多少顆糖？`;
-                        ans = n2 + n3;
+                        let totalLegs = Math.floor(Math.random()*10)*4 + 12; // Ensure divisible
+                        let cows = Math.floor(totalLegs / 4);
+                        qHtml = `農場裏有一些牛，數一數腳，<br>共有 ${totalLegs} 隻腳。<br>請問有多少隻牛？`;
+                        correctMath = cows;
                     }
-                    qHtml += `<br><small>（提示：可以用紙筆畫一畫喔！）</small>`;
-                    correctMath = ans;
+                    qHtml += `<br><small>（提示：先想一想再算）</small>`;
                 }
             }
             else if (gameMode === 'time') {
                 if (level === 1) {
                     let h = Math.floor(Math.random()*12)+1;
-                    let m = [0,15,30,45][Math.floor(Math.random()*4)];
+                    let m = Math.floor(Math.random()*60);
+                    // 調整為 5 分鐘一刻度，符合 P3 基礎
+                    m = Math.floor(m/5)*5; 
                     drawClock(h, m);
                     qHtml = `鐘面上的時間是？`;
                     correctH = h; correctM = m;
                 }
                 else if (level === 2) {
+                    // Lv 2: 時間經過 (可能跨越小時)
                     let startH = Math.floor(Math.random()*8)+1;
-                    let startM = [0,30][Math.floor(Math.random()*2)];
-                    let durH = Math.floor(Math.random()*2)+1;
-                    let durM = [0,30][Math.floor(Math.random()*2)];
+                    let startM = [10, 20, 30, 40, 50][Math.floor(Math.random()*5)];
+                    let addM = 30; // 固定加 30 分鐘，容易跨小時
+                    
                     drawClock(startH, startM);
                     
-                    let totalMin = (startH*60 + startM) + (durH*60 + durM);
+                    let totalMin = (startH*60 + startM) + addM;
                     let finalH = Math.floor(totalMin/60);
                     let finalM = totalMin%60;
                     let displayH = finalH % 12 || 12;
                     
-                    qHtml = `現在是 ${startH}:${startM===0?'00':30}，<br>經過 ${durH}小時${durM===0?'':durM+'分'}後是幾點？`;
+                    qHtml = `現在是 ${startH}:${startM<10?'0'+startM:startM}，<br>經過 ${addM} 分鐘後是幾點？`;
                     correctH = displayH; correctM = finalM;
                 }
                 else if (level === 3) {
-                    let h12 = Math.floor(Math.random() * 12) + 1;
+                    // Lv 3: 24小時制 (混合上下午)
+                    let h12 = Math.floor(Math.random() * 11) + 1; // 1-11
                     let m = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
-                    let isPM = Math.random() > 0.5;
-                    let period = isPM ? "下午" : "上午";
+                    let isPM = true; // P3 重點通常在 PM 轉換
                     drawClock(h12, m);
-                    qHtml = `現在是 <span style="color:#e91e63">${period}</span>，<br>請用「24 小時制」輸入時間。`;
-                    let ansH = h12;
-                    if (isPM) { if (h12 !== 12) ansH += 12; }
-                    else { if (h12 === 12) ansH = 0; }
+                    qHtml = `現在是 <span style="color:#e91e63">下午</span>，<br>請用「24 小時制」輸入時間。`;
+                    let ansH = h12 + 12;
                     correctH = ansH; correctM = m;
                 }
                 else if (level === 4) {
-                    const type = Math.floor(Math.random() * 4);
-                    let startH, startM, durH, durM, ansH, ansM;
-                    
-                    if (type === 0) { // Train
-                        startH = Math.floor(Math.random()*11)+1;
-                        startM = [0,15,30,45][Math.floor(Math.random()*4)];
-                        durH = Math.floor(Math.random()*3)+1;
-                        durM = [0,30][Math.floor(Math.random()*2)];
+                    // Lv 4: 時間應用題 (跨度大)
+                    const type = Math.floor(Math.random() * 3);
+                    if (type === 0) { 
+                        let startH = Math.floor(Math.random()*8)+8; // 8am - 3pm
+                        let startM = [0,30][Math.floor(Math.random()*2)];
+                        let durH = 1; let durM = 45; // 較難的加法
                         
-                        drawClock(startH, startM);
+                        let total = startH*60 + startM + durH*60 + durM;
+                        let endH = Math.floor(total/60);
+                        let endM = total%60;
                         
-                        let totalMin = startH*60 + startM + durH*60 + durM;
-                        ansH = Math.floor(totalMin/60) % 12 || 12;
-                        ansM = totalMin % 60;
-                        // Spoken: 行咗, 到站 -> Written: 行駛了, 到達
-                        qHtml = `火車由 ${startH}:${startM===0?'00':startM} 出發，<br>行駛了 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>什麼時間到達？（12小時制）`;
-                    } else if (type === 1) { // Party
-                        startH = Math.floor(Math.random()*8)+1; 
-                        startM = 0;
-                        durH = Math.floor(Math.random()*2)+1;
-                        durM = 30;
-                        drawClock(startH, startM);
+                        // 轉換為 24小時制顯示在題目，求 12小時制答案
+                        qHtml = `電影在 ${startH}:${startM===0?'00':startM} 開始播放，<br>片長 1 小時 45 分，<br>什麼時間結束？(12小時制)`;
+                        correctH = endH > 12 ? endH - 12 : endH; 
+                        correctM = endM;
+                        drawClock(startH % 12 || 12, startM); // 輔助
+                    } else if (type === 1) {
+                        // 倒推時間
+                        let endH = 5; let endM = 30; // 5:30 PM
+                        let durH = 1; let durM = 15;
+                        qHtml = `小明下午 ${endH}:${endM} 上完畫畫班，<br>畫畫班上課時間是 ${durH} 小時 ${durM} 分，<br>請問幾點開始上課？`;
                         
-                        let totalMin = startH*60 + startM + durH*60 + durM;
-                        ansH = Math.floor(totalMin/60) % 12 || 12;
-                        ansM = totalMin % 60;
-                        // Spoken: 玩咗, 完結 -> Written: 進行了, 結束
-                        qHtml = `派對由 ${startH} 點開始，<br>進行了 ${durH} 小時 30 分，<br>幾點結束？`;
-                    } else if (type === 2) { // Backward
-                        let endH = Math.floor(Math.random()*11)+1;
-                        let endM = [0,30][Math.floor(Math.random()*2)];
-                        durH = Math.floor(Math.random()*2)+1;
-                        durM = [0,30][Math.floor(Math.random()*2)];
-                        
+                        let totalEnd = (endH+12)*60 + endM;
+                        let startTotal = totalEnd - (durH*60 + durM);
+                        let startH24 = Math.floor(startTotal/60);
+                        correctH = startH24 > 12 ? startH24 - 12 : startH24;
+                        correctM = startTotal % 60;
+                        drawClock(correctH, correctM); // 顯示開始時間作為提示? 不，顯示結束時間
                         drawClock(endH, endM);
-                        
-                        let totalDur = durH*60 + durM;
-                        let startTotal = endH*60 + endM - totalDur;
-                        if (startTotal < 0) startTotal += 12*60;
-                        ansH = Math.floor(startTotal/60) % 12 || 12;
-                        ansM = startTotal % 60;
-                        // Spoken: 屋企, 用咗 -> Written: 家中, 用了
-                        qHtml = `小明 ${endH}:${endM===0?'00':endM} 到學校，<br>從家中出發用了 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>幾點出門？`;
-                    } else { // 24h
-                        let h24 = Math.floor(Math.random()*20)+4;
-                        let m = [0,15,30,45][Math.floor(Math.random()*4)];
-                        let addH = Math.floor(Math.random()*3)+1;
-                        let addM = [0,30][Math.floor(Math.random()*2)];
-                        
-                        let displayH = h24 % 12 || 12;
-                        drawClock(displayH, m);
-                        
-                        let total = h24*60 + m + addH*60 + addM;
-                        let nextDay = total >= 24*60;
-                        total %= 24*60;
-                        ansH = Math.floor(total/60);
-                        ansM = total % 60;
-                        qHtml = `現在是 24小時制 ${h24.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}，<br>再過 ${addH} 小時 ${addM===0?'':addM+'分'} 後是幾點？<br>${nextDay ? '<small>(注意：已過凌晨)</small>' : ''}`;
+                    } else {
+                        // 24小時制運算
+                        let h = 14; let m = 20;
+                        qHtml = `現在是 14:20，<br>半小時後是甚麼時間？<br>(24小時制)`;
+                        correctH = 14; correctM = 50;
+                        drawClock(2, 20);
                     }
-                    correctH = ansH; correctM = ansM;
-                    qHtml += `<br><small>（請看鐘面輔助計算）</small>`;
                 }
             }
             document.getElementById('question-area').innerHTML = qHtml;
