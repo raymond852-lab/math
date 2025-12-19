@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玉桂狗 P3 數學特訓 (升級版)</title>
+    <title>玉桂狗 P3 數學特訓 (書面語版)</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --cinna-blue: #b3e5fc; --cinna-dark: #0288d1; --cinna-pink: #ffc1e3; --bg: #f0f8ff; }
@@ -36,7 +36,6 @@
         .sticker-slot.unlocked { background: #fff9c4; border: 2px solid #fdd835; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
         
-        /* 錯誤時的震動動畫 */
         .shake { animation: shake 0.5s; }
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
 
@@ -157,7 +156,6 @@
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             
-            // 只有時間模式顯示時鐘
             const showClock = (mode === 'time');
             document.getElementById('clock-canvas').style.display = showClock ? 'block' : 'none';
             
@@ -257,7 +255,6 @@
         function initClock() {
             const c = document.getElementById('clock-canvas');
             if(c) {
-                // 為高解析度螢幕優化 (Retina Display)
                 const dpr = window.devicePixelRatio || 1;
                 c.width = 160 * dpr;
                 c.height = 160 * dpr;
@@ -273,23 +270,19 @@
             ctx.save();
             ctx.translate(80,80);
             
-            // 鐘面
             ctx.beginPath(); ctx.arc(0,0,70,0,2*Math.PI);
             ctx.fillStyle='white'; ctx.fill();
             ctx.lineWidth = 4; ctx.strokeStyle='#546e7a'; ctx.stroke();
             
-            // 數字
             ctx.fillStyle='#333'; ctx.font="bold 16px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
             for(let i=1; i<=12; i++) {
                 let ang = i * Math.PI / 6;
                 ctx.fillText(i, Math.sin(ang)*56, -Math.cos(ang)*56);
             }
             
-            // 指針
-            drawHand(ctx, (h%12)*30 + m*0.5, 40, 5, '#333'); // 時
-            drawHand(ctx, m*6, 55, 3, '#e91e63'); // 分
+            drawHand(ctx, (h%12)*30 + m*0.5, 40, 5, '#333'); 
+            drawHand(ctx, m*6, 55, 3, '#e91e63'); 
             
-            // 中心點
             ctx.beginPath(); ctx.arc(0,0,5,0,2*Math.PI); ctx.fillStyle='#333'; ctx.fill();
             ctx.restore();
         }
@@ -307,7 +300,6 @@
             document.getElementById('answer-m').value = '';
             document.getElementById('feedback').innerText = '';
             
-            // 移除錯誤震動
             document.getElementById('input-container').classList.remove('shake');
             
             if(gameMode === 'time') document.getElementById('answer-h').focus();
@@ -331,23 +323,28 @@
                     let n1, n2, n3, ans;
                     if(type === 0) {
                         n1 = Math.floor(Math.random()*30)+20; n2 = Math.floor(Math.random()*10)+5; n3 = Math.floor(Math.random()*5)+2;
-                        qHtml = `玉桂狗有 ${n1} 顆糖，送咗 ${n2} 顆畀朋友，<br>又吃了 ${n3} 顆，<br>仲剩幾多顆？`;
+                        // Spoken: 送咗, 吃了, 仲剩 -> Written: 送了, 吃了, 還剩
+                        qHtml = `玉桂狗有 ${n1} 顆糖，送了 ${n2} 顆給朋友，<br>又吃了 ${n3} 顆，<br>還剩多少顆？`;
                         ans = n1 - n2 - n3;
                     } else if(type === 1) {
                         n1 = Math.floor(Math.random()*6)+3; n2 = Math.floor(Math.random()*4)+2; n3 = Math.floor(Math.random()*5)+2;
-                        qHtml = `一盒有 ${n1} 枝筆，買咗 ${n2} 盒，<br>每枝賣 ${n3} 元，總共可以賣幾多錢？`;
+                        // Spoken: 買咗, 幾多錢 -> Written: 買了, 多少元
+                        qHtml = `一盒有 ${n1} 枝筆，買了 ${n2} 盒，<br>每枝賣 ${n3} 元，總共可以賣多少元？`;
                         ans = n1 * n2 * n3;
                     } else if(type === 2) {
                         n1 = Math.floor(Math.random()*40)+20; n2 = Math.floor(Math.random()*15)+5; n3 = Math.floor(Math.random()*10)+3;
-                        qHtml = `小明有 ${n1} 張卡紙，用咗 ${n2} 張做手工，<br>媽媽又畀咗 ${n3} 張佢，<br>而家有幾多張？`;
+                        // Spoken: 用咗, 畀咗, 而家, 幾多 -> Written: 用了, 給了, 現在, 多少
+                        qHtml = `小明有 ${n1} 張卡紙，用了 ${n2} 張做手工，<br>媽媽又給了他 ${n3} 張，<br>現在有多少張？`;
                         ans = n1 - n2 + n3;
                     } else if(type === 3) {
                         n1 = Math.floor(Math.random()*8)+3; n2 = Math.floor(Math.random()*6)+4; n3 = n1 * n2;
-                        qHtml = `有 ${n3} 粒糖果，要平均分畀 ${n2} 個小朋友，<br>每人可以分到幾粒？`;
+                        // Spoken: 畀 -> Written: 給
+                        qHtml = `有 ${n3} 粒糖果，要平均分給 ${n2} 個小朋友，<br>每人可以分到多少粒？`;
                         ans = n1;
                     } else {
                         n1 = Math.floor(Math.random()*5)+2; n2 = Math.floor(Math.random()*20)+10; n3 = Math.floor(Math.random()*30)+10;
-                        qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
+                        // Spoken: 打工, 畀, 幾多 -> Written: 工作, 給, 多少
+                        qHtml = `工作 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外給 ${n3} 元獎金，<br>總共賺了多少元？`;
                         ans = n1 * n2 + n3;
                     }
                     qHtml += `<br><small>（提示：可以用紙筆一步一步算）</small>`;
@@ -366,24 +363,28 @@
                     let n1, n2, n3, n4, ans;
                     if (type === 0) {
                         n1 = Math.floor(Math.random()*50)+30; n2 = Math.floor(Math.random()*10)+5; n3 = Math.floor(Math.random()*8)+3;
-                        qHtml = `一條繩長 ${n1} 厘米，剪咗 ${n2} 厘米畀小狗，<br>再剪 ${n3} 厘米畀玉桂狗，<br>仲剩幾多厘米？`;
+                        // Spoken: 剪咗, 畀, 仲剩 -> Written: 剪了, 給, 還剩
+                        qHtml = `一條繩長 ${n1} 厘米，剪了 ${n2} 厘米給小狗，<br>再剪 ${n3} 厘米給玉桂狗，<br>還剩多少厘米？`;
                         ans = n1 - n2 - n3;
                     } else if (type === 1) {
                         let people = Math.floor(Math.random()*4)+2; let perPerson = Math.floor(Math.random()*6)+2; n3 = people * perPerson;
-                        qHtml = `有一袋糖共 ${n3} 粒，<br>平均分畀 ${people} 個小朋友，<br>每人有幾粒？`;
+                        // Spoken: 畀 -> Written: 給
+                        qHtml = `有一袋糖共 ${n3} 粒，<br>平均分給 ${people} 個小朋友，<br>每人有多少粒？`;
                         ans = perPerson;
                     } else if (type === 2) {
                         let chicken = Math.floor(Math.random()*5)+1; let rabbit = Math.floor(Math.random()*5)+1;
                         let heads = chicken + rabbit; let legs = (chicken * 2) + (rabbit * 4);
-                        qHtml = `農場有雞同兔，數頭有 ${heads} 隻，<br>數腳有 ${legs} 隻。<br>請問有幾多隻雞？`;
+                        // Spoken: 同, 幾多 -> Written: 和, 多少
+                        qHtml = `農場有雞和兔，數頭有 ${heads} 隻，<br>數腳有 ${legs} 隻。<br>請問有多少隻雞？`;
                         ans = chicken;
                     } else if (type === 3) {
                         n1 = Math.floor(Math.random()*4)+2; n2 = Math.floor(Math.random()*30)+20; n3 = Math.floor(Math.random()*50)+10;
-                        qHtml = `打工 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外畀 ${n3} 元獎金，<br>總共賺咗幾多錢？`;
+                        qHtml = `工作 ${n1} 小時，每小時 ${n2} 元，<br>老闆額外給 ${n3} 元獎金，<br>總共賺了多少元？`;
                         ans = n1 * n2 + n3;
                     } else {
                         n1 = Math.floor(Math.random()*10)+5; n2 = Math.floor(Math.random()*20)+10; n3 = Math.floor(Math.random()*5)+2;
-                        qHtml = `玉桂狗吃了 ${n2} 顆糖後仲有 ${n3} 顆，<br>原本有幾多顆糖？`;
+                        // Spoken: 仲有, 幾多 -> Written: 還有, 多少
+                        qHtml = `玉桂狗吃了 ${n2} 顆糖後還有 ${n3} 顆，<br>原本有多少顆糖？`;
                         ans = n2 + n3;
                     }
                     qHtml += `<br><small>（提示：可以用紙筆畫一畫喔！）</small>`;
@@ -429,21 +430,21 @@
                     const type = Math.floor(Math.random() * 4);
                     let startH, startM, durH, durM, ansH, ansM;
                     
-                    if (type === 0) { // 火車出發
+                    if (type === 0) { // Train
                         startH = Math.floor(Math.random()*11)+1;
                         startM = [0,15,30,45][Math.floor(Math.random()*4)];
                         durH = Math.floor(Math.random()*3)+1;
                         durM = [0,30][Math.floor(Math.random()*2)];
                         
-                        // 畫出出發時間輔助
                         drawClock(startH, startM);
                         
                         let totalMin = startH*60 + startM + durH*60 + durM;
                         ansH = Math.floor(totalMin/60) % 12 || 12;
                         ansM = totalMin % 60;
-                        qHtml = `火車由 ${startH}:${startM===0?'00':startM} 出發，<br>行咗 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>幾時到站？（12小時制）`;
-                    } else if (type === 1) { // 活動結束
-                        startH = Math.floor(Math.random()*8)+1; // 1點到8點
+                        // Spoken: 行咗, 到站 -> Written: 行駛了, 到達
+                        qHtml = `火車由 ${startH}:${startM===0?'00':startM} 出發，<br>行駛了 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>什麼時間到達？（12小時制）`;
+                    } else if (type === 1) { // Party
+                        startH = Math.floor(Math.random()*8)+1; 
                         startM = 0;
                         durH = Math.floor(Math.random()*2)+1;
                         durM = 30;
@@ -452,14 +453,14 @@
                         let totalMin = startH*60 + startM + durH*60 + durM;
                         ansH = Math.floor(totalMin/60) % 12 || 12;
                         ansM = totalMin % 60;
-                        qHtml = `派對由 ${startH} 點開始，<br>玩咗 ${durH} 小時 30 分，<br>幾點完結？`;
-                    } else if (type === 2) { // 倒推時間
+                        // Spoken: 玩咗, 完結 -> Written: 進行了, 結束
+                        qHtml = `派對由 ${startH} 點開始，<br>進行了 ${durH} 小時 30 分，<br>幾點結束？`;
+                    } else if (type === 2) { // Backward
                         let endH = Math.floor(Math.random()*11)+1;
                         let endM = [0,30][Math.floor(Math.random()*2)];
                         durH = Math.floor(Math.random()*2)+1;
                         durM = [0,30][Math.floor(Math.random()*2)];
                         
-                        // 畫出到達時間
                         drawClock(endH, endM);
                         
                         let totalDur = durH*60 + durM;
@@ -467,14 +468,14 @@
                         if (startTotal < 0) startTotal += 12*60;
                         ansH = Math.floor(startTotal/60) % 12 || 12;
                         ansM = startTotal % 60;
-                        qHtml = `小明 ${endH}:${endM===0?'00':endM} 到學校，<br>由屋企出發用咗 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>幾點出門？`;
-                    } else { // 24小時制 + 跨日
+                        // Spoken: 屋企, 用咗 -> Written: 家中, 用了
+                        qHtml = `小明 ${endH}:${endM===0?'00':endM} 到學校，<br>從家中出發用了 ${durH} 小時 ${durM===0?'':durM+'分'}，<br>幾點出門？`;
+                    } else { // 24h
                         let h24 = Math.floor(Math.random()*20)+4;
                         let m = [0,15,30,45][Math.floor(Math.random()*4)];
                         let addH = Math.floor(Math.random()*3)+1;
                         let addM = [0,30][Math.floor(Math.random()*2)];
                         
-                        // 畫出現在時間的鐘面 (轉為12小時制顯示)
                         let displayH = h24 % 12 || 12;
                         drawClock(displayH, m);
                         
@@ -511,10 +512,10 @@
             const submitBtn = document.getElementById('submit-btn');
             
             if(isCorrect) {
-                speak("答對了！好叻呀！");
+                speak("答對了！做得好！");
                 feedbackEl.innerText = "✨ 答對了！+1 寶藏 ✨";
                 feedbackEl.style.color = "#4caf50";
-                submitBtn.disabled = true; // 防止重複點擊
+                submitBtn.disabled = true; 
                 
                 unlockSticker();
                 
@@ -522,14 +523,13 @@
                     generateQuestion();
                 }, 1200);
             } else {
-                feedbackEl.innerText = "再算一次看看！💪";
+                feedbackEl.innerText = "再計算一次看看！💪";
                 feedbackEl.style.color = "#e91e63";
                 speak("再試一次");
                 
-                // 震動效果
                 const container = document.getElementById('input-container');
                 container.classList.remove('shake');
-                void container.offsetWidth; // Trigger reflow
+                void container.offsetWidth; 
                 container.classList.add('shake');
                 
                 if(gameMode === 'time') {
