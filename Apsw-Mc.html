@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APSW 數學科測驗 - 公因數和最大公因數</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",serif;background:#EAEAEA;color:#111;line-height:1.8}
+.paper{max-width:860px;margin:24px auto;background:white;border:2px solid #111;padding:28px 30px 40px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.top{border-bottom:3px double #111;padding-bottom:14px;text-align:center}
+.top h1{margin:0;font-size:30px;letter-spacing:2px}
+.top h2{margin:6px 0 0;font-size:19px;font-weight:400}
+.info{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:center;margin:16px 0;font-size:16px}
+.info span{border-bottom:1px solid #111;padding-bottom:2px;min-width:140px;text-align:center}
+.meta{display:flex;justify-content:space-between;flex-wrap:wrap;background:#F5F5F5;border:1px solid #111;padding:10px 14px;font-size:15px}
+.notice{border:1px solid #111;padding:12px 16px;margin:16px 0;font-size:15px}
+.notice b{font-size:16px}
+.score{position:sticky;top:10px;background:#111;color:white;padding:10px;border-radius:999px;text-align:center;font-weight:700;z-index:10}
+.qblock{border-top:1px solid #999;padding:18px 0}
+.qtitle{font-size:18px;font-weight:700}
+.marks{float:right;background:#111;color:white;padding:2px 10px;border-radius:999px;font-size:13px}
+button.opt{display:block;width:100%;text-align:left;background:white;border:1.5px solid #111;border-radius:8px;padding:11px 13px;margin:7px 0;font-size:16px;cursor:pointer;font-family:inherit}
+button.opt:hover{background:#F5F5F5}
+button.opt:disabled{cursor:default}
+button.hint{background:#FFF3CD;border:1px solid #111;border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer}
+.hintbox{display:none;background:#FFFBEA;border:1px dashed #111;padding:11px 13px;margin-top:8px;font-size:15px}
+.hintbox.show{display:block}
+.exp{display:none;background:#F0F7F0;border:1px solid #111;padding:11px 13px;margin-top:8px}
+.exp.show{display:block}
+.correct{background:#DFF5E3!important;border-color:#1A7A2E!important}
+.wrong{background:#FFE3E3!important;border-color:#B00!important}
+.ok{color:#1A7A2E;font-weight:800}
+.no{color:#B00;font-weight:800}
+.mono{font-family:ui-monospace,monospace;background:#111;color:#FFE9B8;padding:12px;border-radius:8px;white-space:pre-wrap}
+.footer{text-align:center;border-top:3px double #111;margin-top:20px;padding-top:14px}
+@media print{body{background:white}.paper{box-shadow:none;margin:0;border:0}.score{display:none}}
+</style>
+</head>
+<body>
+<div class="paper">
+<div class="top">
+<h1>APSW 數學科測驗</h1>
+<h2>單元：公因數和最大公因數</h2>
+</div>
+<div class="info">
+<span>姓名：________________</span>
+<span>班別：__________</span>
+<span>日期：__________</span>
+</div>
+<div class="meta"><span>時間：30 分鐘</span><span>滿分：40 分</span><span>題數：共 8 題</span></div>
+
+<div class="notice">
+<b>考生須知</b><br>
+1. 本卷共有 8 題，每題 5 分，共 40 分。<br>
+2. 每題只有一個正確答案，請選擇一個最合適的答案。<br>
+3. 如有需要，可先按「提示」再作答。提示不會直接顯示答案，只會提供思考方向。<br>
+4. 作答後，系統會即時顯示正確答案和解說。
+</div>
+
+<div class="score" id="score">得分：0 / 40　已作答：0 題</div>
+
+<div class="qblock"><p class="qtitle">1. 甲、乙兩數的最大公因數是 12，甲是 36。下列哪一個數不可能是乙？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h1').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h1">提示：乙與 36 的最大公因數必須是 12，請逐一檢查每一個選項。</div>
+<button class="opt" onclick="ans(this,1,false)">A. 24</button>
+<button class="opt" onclick="ans(this,1,false)">B. 48</button>
+<button class="opt" onclick="ans(this,1,false)">C. 60</button>
+<button class="opt" onclick="ans(this,1,true)">D. 72</button>
+<div class="exp" id="exp1"><span class="ok">正確答案：D</span><br>解說：36 與 72 的最大公因數是 36，不是 12，因此 72 不可能是乙。其他三個選項與 36 的最大公因數都是 12。</div></div>
+
+<div class="qblock"><p class="qtitle">2. 有兩個數，它們的公因數只有 1。下列哪一項一定正確？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h2').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h2">提示：請舉一個例子，例如 8 和 9，看看是否符合每一個選項。</div>
+<button class="opt" onclick="ans(this,2,false)">A. 兩個數都是質數</button>
+<button class="opt" onclick="ans(this,2,true)">B. 兩個數沒有相同的質因數</button>
+<button class="opt" onclick="ans(this,2,false)">C. 兩個數其中一個一定是 1</button>
+<button class="opt" onclick="ans(this,2,false)">D. 兩個數都是奇數</button>
+<div class="exp" id="exp2"><span class="ok">正確答案：B</span><br>解說：公因數只有 1，即是兩數互質，即是沒有相同的質因數。8 和 9 便是反例，8 不是質數，也不是 1，而且 8 是偶數。</div></div>
+
+<div class="qblock"><p class="qtitle">3. 老師有 36 枝鉛筆和 48 枝原子筆，要分成若干份，每份的鉛筆和原子筆數量都相同，而且沒有剩餘。最多可以分成多少份？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h3').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h3">提示：「最多可以分成多少份」，就是求 36 和 48 的最大公因數。</div>
+<button class="opt" onclick="ans(this,3,false)">A. 6 份</button>
+<button class="opt" onclick="ans(this,3,true)">B. 12 份</button>
+<button class="opt" onclick="ans(this,3,false)">C. 18 份</button>
+<button class="opt" onclick="ans(this,3,false)">D. 24 份</button>
+<div class="exp" id="exp3"><span class="ok">正確答案：B</span><br>解說：36 和 48 的最大公因數是 12，因此最多可以分成 12 份。</div></div>
+
+<div class="qblock"><p class="qtitle">4. 兩條繩子分別長 30 厘米和 45 厘米，要剪成同樣長而且最長的小段，而且沒有剩餘。每段最長是多少厘米？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h4').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h4">提示：「每段最長」，就是求 30 和 45 的最大公因數。</div>
+<button class="opt" onclick="ans(this,4,false)">A. 5 厘米</button>
+<button class="opt" onclick="ans(this,4,false)">B. 10 厘米</button>
+<button class="opt" onclick="ans(this,4,true)">C. 15 厘米</button>
+<button class="opt" onclick="ans(this,4,false)">D. 30 厘米</button>
+<div class="exp" id="exp4"><span class="ok">正確答案：C</span><br>解說：30 和 45 的最大公因數是 15，因此每段最長是 15 厘米。</div></div>
+
+<div class="qblock"><p class="qtitle">5. 某數 ★ 和 60 用短除法計算，左邊的兩個除數分別是 6 和 2，最後得到 3 和 5。★ 是多少？★ 和 60 的最大公因數是多少？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h5').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h5">提示：★ 要將左邊和下面的數全部乘起來。最大公因數只須乘左邊的數。</div>
+<div class="mono">  6 | ★ , 60
+  2 |  6 , 10
+    |  3 ,  5</div>
+<button class="opt" onclick="ans(this,5,true)">A. ★ = 36，最大公因數 = 12</button>
+<button class="opt" onclick="ans(this,5,false)">B. ★ = 36，最大公因數 = 36</button>
+<button class="opt" onclick="ans(this,5,false)">C. ★ = 12，最大公因數 = 12</button>
+<button class="opt" onclick="ans(this,5,false)">D. ★ = 36，最大公因數 = 6</button>
+<div class="exp" id="exp5"><span class="ok">正確答案：A</span><br>解說：★ = 6 × 2 × 3 = 36。最大公因數 = 6 × 2 = 12。請注意，★ 本身與最大公因數是兩個不同的數。</div></div>
+
+<div class="qblock"><p class="qtitle">6. 下列哪一項敍述是正確的？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h6').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h6">提示：最大公因數一定是兩個數的因數。請思考「因數」和「倍數」的關係。</div>
+<button class="opt" onclick="ans(this,6,true)">A. 如果兩個數的最大公因數是 9，這兩個數一定都是 9 的倍數</button>
+<button class="opt" onclick="ans(this,6,false)">B. 如果兩個數的最大公因數是 9，這兩個數一定等於 9</button>
+<button class="opt" onclick="ans(this,6,false)">C. 如果兩個數的最大公因數是 9，這兩個數一定都是奇數</button>
+<button class="opt" onclick="ans(this,6,false)">D. 如果兩個數的最大公因數是 9，這兩個數的和一定是 9</button>
+<div class="exp" id="exp6"><span class="ok">正確答案：A</span><br>解說：最大公因數是兩個數的因數，因此兩個數一定都是它的倍數。例如 18 和 27 的最大公因數是 9，但兩個數都不等於 9。</div></div>
+
+<div class="qblock"><p class="qtitle">7. 連續兩個自然數，例如 9 和 10，它們的最大公因數一定是？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h7').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h7">提示：請試多幾個例子，例如 7 和 8，20 和 21，看看有什麼規律。</div>
+<button class="opt" onclick="ans(this,7,false)">A. 0</button>
+<button class="opt" onclick="ans(this,7,true)">B. 1</button>
+<button class="opt" onclick="ans(this,7,false)">C. 9</button>
+<button class="opt" onclick="ans(this,7,false)">D. 10</button>
+<div class="exp" id="exp7"><span class="ok">正確答案：B</span><br>解說：連續兩個自然數一定沒有相同的質因數，因此一定互質，最大公因數一定是 1。</div></div>
+
+<div class="qblock"><p class="qtitle">8. 小華用短除法求 24 和 36 的最大公因數。他先用 6 去除，得到 4 和 6；再用 2 去除，得到 2 和 3。他說最大公因數是 6 × 2 = 12。他的做法是否正確？為什麼？<span class="marks">5分</span></p>
+<button class="hint" onclick="document.getElementById('h8').classList.toggle('show')">提示</button>
+<div class="hintbox" id="h8">提示：短除法是否一定要用質數？最大公因數是把左邊的數相加還是相乘？</div>
+<button class="opt" onclick="ans(this,8,true)">A. 正確，因為兩次用的都是公因數，而且最後 2 和 3 沒有公因數</button>
+<button class="opt" onclick="ans(this,8,false)">B. 不正確，因為短除法一定要用質數，6 不是質數</button>
+<button class="opt" onclick="ans(this,8,false)">C. 不正確，因為 2 和 3 還可以繼續除</button>
+<button class="opt" onclick="ans(this,8,false)">D. 不正確，因為最大公因數應該是 6 + 2 = 8</button>
+<div class="exp" id="exp8"><span class="ok">正確答案：A</span><br>解說：短除法不一定要用質數，只要是公因數便可以。最大公因數是把左邊的數相乘，不是相加。</div></div>
+
+<div class="footer">
+<p><b>全卷完</b></p>
+<p>請再檢查一次，確認每一題都已作答。</p>
+<button onclick="location.reload()" style="background:#111;color:white;border:0;padding:10px 18px;border-radius:999px;cursor:pointer">重新作答</button>
+</div>
+</div>
+<script>
+let score=0, done={};
+function ans(btn,q,correct){
+  if(done[q]) return; done[q]=true;
+  let card=btn.closest('.qblock');
+  card.querySelectorAll('button.opt').forEach(b=>b.disabled=true);
+  if(correct){ btn.classList.add('correct'); score+=5; } else { btn.classList.add('wrong'); }
+  document.getElementById('exp'+q).classList.add('show');
+  document.getElementById('score').textContent='得分：'+score+' / 40　已作答：'+Object.keys(done).length+' 題';
+  if(Object.keys(done).length===8){
+    setTimeout(()=>{ alert(score>=30 ? '表現優秀，請繼續保持。' : score>=20 ? '表現良好，請留意錯題的解說。' : '請再細閱每一題的提示和解說，然後再嘗試一次。'); },200);
+  }
+}
+</script>
+</body>
+</html>
