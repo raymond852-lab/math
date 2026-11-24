@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>公因數小教室</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;background:#FFF8EC;color:#2D2A26;line-height:1.7}
+header{background:#FF8A3D;color:white;padding:28px 20px;text-align:center}
+header h1{margin:0;font-size:32px}
+header p{margin:8px 0 0;opacity:.95}
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 60px}
+.card{background:white;border:2px solid #F0DCC0;border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 8px 22px rgba(120,70,10,.08)}
+.card h2{margin-top:0;color:#E86A1A}
+.pill{display:inline-block;background:#FFF1D6;border:1px solid #F0DCC0;padding:4px 10px;border-radius:999px;font-size:14px;margin:2px}
+.big{font-size:20px;font-weight:700}
+button{font-family:inherit;border:0;border-radius:999px;padding:11px 18px;font-size:16px;cursor:pointer;background:#FF8A3D;color:white;font-weight:700;margin:4px}
+button.secondary{background:#17865A}
+button.ghost{background:#EEE;color:#333}
+button:hover{opacity:.92}
+.hidden{display:none}
+.ok{color:#17865A;font-weight:800}
+.no{color:#D33;font-weight:800}
+.box{background:#FFF1D6;border-radius:12px;padding:14px;margin:10px 0}
+.mono{font-family:ui-monospace,monospace;background:#2D2A26;color:#FFE9B8;padding:14px;border-radius:12px;white-space:pre-wrap;line-height:1.8}
+.quiz-q{font-weight:700;font-size:18px}
+.feedback{margin-top:8px;min-height:24px;font-weight:700}
+.score{position:sticky;top:0;background:#FFD166;padding:10px 14px;border-radius:999px;text-align:center;font-weight:800;z-index:10}
+table{width:100%;border-collapse:collapse}
+td,th{border:1px solid #F0DCC0;padding:8px;text-align:center}
+th{background:#FFF1D6}
+</style>
+</head>
+<body>
+<header>
+<h1>公因數小教室</h1>
+<p>由因數開始，一步步搞清楚短除法</p>
+</header>
+<div class="wrap">
+<div class="score" id="score">練習分數：0 / 6</div>
+
+<div class="card">
+<h2>第一課：三個名詞唔好撈亂</h2>
+<p><span class="pill">因數 = 除得盡佢嘅數</span> <span class="pill">公因數 = 兩個都有</span> <span class="pill">最大公因數 = 最大嗰個</span></p>
+<p>例如 12 同 18：</p>
+<p>12 嘅因數：1, 2, 3, 4, 6, 12<br>18 嘅因數：1, 2, 3, 6, 9, 18<br><b>公因數：1, 2, 3, 6　→　最大公因數：6</b></p>
+</div>
+
+<div class="card">
+<h2>第二課：點樣唔漏因數 — 成對搵</h2>
+<p>唔好靠估，要成對搵，由細到大試：</p>
+<p>搵 30 嘅因數：1×30、2×15、3×10、5×6</p>
+<button onclick="document.getElementById('f30').classList.toggle('hidden')">㩒我睇 30 嘅因數</button>
+<div id="f30" class="box hidden">30 嘅因數係：<b>1, 2, 3, 5, 6, 10, 15, 30</b><br>最易漏嘅就係 <b>2 同 15</b> 呢一對！</div>
+<p><b>口訣：</b>因數要成對，由細到大試。</p>
+</div>
+
+<div class="card">
+<h2>第三課：公因數一定要兩個都除得盡</h2>
+<p>問題：3 係唔係 56 同 84 嘅公因數？</p>
+<div class="box">56 ÷ 3 = 除唔盡<br>84 ÷ 3 = 28</div>
+<p>答案係 <b>唔係</b>，因為要兩個都得先叫公因數。</p>
+<p>咁 7 呢？56 ÷ 7 = 8，84 ÷ 7 = 12，兩個都得，所以 7 先係公因數。</p>
+</div>
+
+<div class="card">
+<h2>第四課：短除法三步</h2>
+<p><b>第一步：</b>除數一定要係大過 1 嘅公因數，唔可以用 1，因為 1 除咩都唔變。</p>
+<p><b>第二步：</b>要一直除到下面兩個數冇公因數為止。</p>
+<p><b>第三步：</b>最大公因數 = 左邊所有除數乘埋，唔係下面嗰兩個數。</p>
+<button onclick="showStep('s1')">例子 A：21 同 35</button>
+<button onclick="showStep('s2')">例子 B：24 同 20</button>
+<button onclick="showStep('s3')">例子 C：30 同 42</button>
+<div id="s1" class="mono hidden">  7 | 21 , 35
+    |  3 ,  5
+最大公因數 = 7
+下面 3 同 5 已經冇公因數，停。</div>
+<div id="s2" class="mono hidden">  2 | 24 , 20
+  2 | 12 , 10
+    |  6 ,  5
+最大公因數 = 2 × 2 = 4
+唔好除一次就停！</div>
+<div id="s3" class="mono hidden">  3 | 30 , 42
+  2 | 10 , 14
+    |  5 ,  7
+最大公因數 = 3 × 2 = 6</div>
+<p>慳時間秘訣：如果大數係細數嘅倍數，最大公因數就係細數。例如 27 同 54，最大公因數直接就係 27。</p>
+</div>
+
+<div class="card">
+<h2>第五課：特別題型</h2>
+<h3>P 同 Q</h3>
+<p>P 嘅第一個倍數就係 P 自己，所以 P = 24。Q 嘅最大因數就係 Q 自己，所以 Q = 20。之後搵 24 同 20 嘅最大公因數 = 4。</p>
+<h3>★ 題</h3>
+<div class="mono">  6 | ★ , 60
+  2 |  6 , 10
+    |  3 ,  5</div>
+<p>★ = 6 × 6 = 36，但最大公因數 = 6 × 2 = 12。唔好將 ★ 同最大公因數撈亂。</p>
+</div>
+
+<div class="card">
+<h2>即刻練習</h2>
+<p>㩒一個答案，即刻知啱定錯。</p>
+
+<div class="box"><p class="quiz-q">1. 30 嘅所有因數係？</p>
+<button onclick="check(this, false, 'f1')">A. 1, 3, 5, 6, 10, 30</button>
+<button onclick="check(this, true, 'f1')">B. 1, 2, 3, 5, 6, 10, 15, 30</button>
+<div class="feedback" id="f1"></div></div>
+
+<div class="box"><p class="quiz-q">2. 12 同 18 有幾多個公因數？</p>
+<button onclick="check(this, false, 'f2')">3 個</button>
+<button onclick="check(this, true, 'f2')">4 個</button>
+<div class="feedback" id="f2"></div></div>
+
+<div class="box"><p class="quiz-q">3. 27 同 54 嘅最大公因數係？</p>
+<button onclick="check(this, false, 'f3')">3</button>
+<button onclick="check(this, true, 'f3')">27</button>
+<div class="feedback" id="f3"></div></div>
+
+<div class="box"><p class="quiz-q">4. 3 係唔係 56 同 84 嘅公因數？</p>
+<button onclick="check(this, false, 'f4')">係</button>
+<button onclick="check(this, true, 'f4')">唔係，因為 3 除唔盡 56</button>
+<div class="feedback" id="f4"></div></div>
+
+<div class="box"><p class="quiz-q">5. 21 同 35 用短除法，第一步應用咩數除？</p>
+<button onclick="check(this, false, 'f5')">1</button>
+<button onclick="check(this, true, 'f5')">7</button>
+<div class="feedback" id="f5"></div></div>
+
+<div class="box"><p class="quiz-q">6. 24 同 20 嘅最大公因數係？</p>
+<button onclick="check(this, false, 'f6')">2</button>
+<button onclick="check(this, true, 'f6')">4</button>
+<div class="feedback" id="f6"></div></div>
+
+<button class="secondary" onclick="location.reload()">重新再做一次</button>
+</div>
+
+<div class="card">
+<h2>記住口訣</h2>
+<p class="big">公因數要兩個都得，短除要除到盡，左邊乘埋就係 H.C.F.</p>
+</div>
+</div>
+<script>
+let score=0; let done={};
+function showStep(id){
+  ['s1','s2','s3'].forEach(x=>{document.getElementById(x).classList.add('hidden')});
+  document.getElementById(id).classList.remove('hidden');
+}
+function check(btn, correct, fid){
+  let el=document.getElementById(fid);
+  if(done[fid]) return;
+  done[fid]=true;
+  if(correct){ el.innerHTML='<span class="ok">啱晒！</span>'; el.style.color='#17865A'; score++; }
+  else { el.innerHTML='<span class="no">唔啱，再諗下，睇返上面嗰課。</span>'; el.style.color='#D33'; }
+  document.getElementById('score').textContent='練習分數：'+score+' / 6';
+  if(Object.keys(done).length===6){
+    setTimeout(()=>{ alert(score>=5 ? '好叻！你已經搞清楚晒！' : '唔緊要，碌返上去再睇一次短除法三步，再做多次！'); },200);
+  }
+}
+</script>
+</body>
+</html>
