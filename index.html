@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #FFF8EC;
+  --surface: #FFFFFF;
+  --surface-2: #FFF1D6;
+  --ink: #2D2A26;
+  --muted: #7A6F63;
+  --line: #F0DCC0;
+  --orange: #FF8A3D;
+  --orange-deep: #E86A1A;
+  --orange-soft: #FFE3D3;
+  --mint: #CDEFE0;
+  --mint-deep: #17865A;
+  --yellow: #FFD166;
+  --pink: #FFD9E8;
+  --blue-soft: #D9EEFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #221C16;
+    --surface: #2F2820;
+    --surface-2: #3A2F24;
+    --ink: #FFF4E3;
+    --muted: #D8CBB8;
+    --line: #57493A;
+    --orange: #FF9A55;
+    --orange-deep: #FFB27F;
+    --orange-soft: #4A2E1B;
+    --mint: #1E3B2F;
+    --mint-deep: #7FE3B0;
+    --yellow: #FFD166;
+    --pink: #4A2E3A;
+    --blue-soft: #23394D;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.num, .big-num {
+  font-family: "Baloo 2", "Noto Sans TC", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+a { color: inherit; }
+button { font-family: inherit; }
+button:focus-visible, a:focus-visible { outline: 4px solid var(--yellow); outline-offset: 3px; border-radius: 999px; }
+
+.soft-shadow { box-shadow: 0 12px 30px rgba(120, 70, 10, 0.10); }
+.card-shadow { box-shadow: 0 8px 22px rgba(120, 70, 10, 0.08); }
+
+.wavy {
+  background-image: radial-gradient(circle at 12px 12px, rgba(255,138,61,.22) 7px, transparent 8px);
+  background-size: 34px 34px;
+}
+.dots {
+  background-image: radial-gradient(circle, rgba(23,134,90,.18) 3px, transparent 4px);
+  background-size: 22px 22px;
+}
